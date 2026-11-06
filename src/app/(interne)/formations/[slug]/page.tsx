@@ -5,14 +5,16 @@ import { ChiffresHero, Hero } from "@/components/Hero";
 import { ListeSessions } from "@/components/ListeSessions";
 import { libelleMode } from "@/components/Mode";
 import { libelleNiveau } from "@/components/Niveau";
-import { Encadre, SectionNumerotee } from "@/components/SectionNumerotee";
+import { AccordeonProgramme } from "@/components/AccordeonProgramme";
+import { SectionNumerotee } from "@/components/SectionNumerotee";
 import { attentesUtilisateur } from "@/lib/attente";
 import { exigerUtilisateur } from "@/lib/auth";
 import { formationParSlug } from "@/lib/catalogue";
 import { themeCategorie } from "@/lib/couleurs";
 import { formatPeriode } from "@/lib/dendreo/dates";
 import { nettoyerHtml } from "@/lib/dendreo/html";
-import { decouperProgramme, markdownVersHtml } from "@/lib/markdown";
+import { markdownVersHtml } from "@/lib/markdown";
+import { estHtml, modulesDeFiche } from "@/lib/programme";
 import { idsSessionsInscrit } from "@/lib/mes-formations";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,10 +41,10 @@ export default async function PageFormation({ params }: Props) {
   const modes = [...new Set(formation.sessions.flatMap((s) => s.modes))];
   const participants = prochaine && prochaine.places.max > 0 ? (prochaine.places.min > 0 ? `${prochaine.places.min} à ${prochaine.places.max} personnes` : `${prochaine.places.max} max.`) : "";
 
-  const presentation = fiche ? markdownVersHtml(fiche.contenu) : nettoyerHtml(prochaine?.descriptionHtml);
-  const objectifs = fiche ? markdownVersHtml(fiche.objectifs) : "";
-  const modules = fiche ? decouperProgramme(fiche.programme) : null;
-  const programmeHtml = fiche && !modules ? markdownVersHtml(fiche.programme) : "";
+  // Sans fiche BO : description Dendreo de la prochaine session.
+  const presentation = fiche ? "" : nettoyerHtml(prochaine?.descriptionHtml);
+  const objectifs = !fiche?.objectifs ? "" : estHtml(fiche.objectifs) ? nettoyerHtml(fiche.objectifs) : markdownVersHtml(fiche.objectifs);
+  const modules = modulesDeFiche(fiche?.programme_modules).map((m) => ({ ...m, contenu: nettoyerHtml(m.contenu) }));
   let n = 0;
 
   return (
@@ -60,10 +62,10 @@ export default async function PageFormation({ params }: Props) {
       >
         <ChiffresHero
           items={[
-            ["Durée", fiche?.duree],
             ["Niveau", libelleNiveau(fiche?.niveau ?? "")],
             ["Format", modes.map(libelleMode).join(", ")],
             ["Participants", participants],
+            ["Modules", modules.length || ""],
             ["Sessions à venir", formation.sessions.length],
           ]}
         />
@@ -72,50 +74,23 @@ export default async function PageFormation({ params }: Props) {
       <div className="mx-auto max-w-5xl px-4 pb-24">
         <Link href="/formations" className="mt-6 inline-block text-sm text-muted hover:text-violet">← Toutes les formations</Link>
 
-        {(presentation || objectifs) && (
+        {objectifs && (
           <SectionNumerotee numero={++n} titre="Objectif">
-            {objectifs && (
-              <div className="mb-4 border-l-4 border-turquoise pl-4 text-[15px] font-semibold text-ink">
-                <Html html={objectifs} />
-              </div>
-            )}
-            {presentation && <Html html={presentation} />}
-          </SectionNumerotee>
-        )}
-
-        {fiche && (fiche.public_cible || fiche.prerequis) && (
-          <SectionNumerotee numero={++n} titre="Pour qui">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {fiche.public_cible && <Encadre titre="Public cible">{fiche.public_cible}</Encadre>}
-              {fiche.prerequis && <Encadre titre="Prérequis">{fiche.prerequis}</Encadre>}
+            <div className="border-l-4 border-turquoise pl-4 [&_p:first-child]:font-semibold [&_p:first-child]:text-ink">
+              <Html html={objectifs} />
             </div>
           </SectionNumerotee>
         )}
 
-        {(modules || programmeHtml) && (
-          <SectionNumerotee numero={++n} titre="Programme" sousTitre={modules ? `${modules.length} module${modules.length > 1 ? "s" : ""}${fiche?.duree ? ` · ${fiche.duree}` : ""}` : undefined}>
-            {modules ? (
-              <div className="space-y-3">
-                {modules.map((m, i) => (
-                  <details key={i} className="group rounded-2xl border border-line bg-surface-2 open:bg-white">
-                    <summary className="flex cursor-pointer list-none items-center gap-4 px-5 py-4">
-                      <span className="text-2xl font-extrabold text-violet/25">{String(i + 1).padStart(2, "0")}</span>
-                      <span className="flex-1 font-semibold">{m.titre}</span>
-                      <span className="text-muted transition group-open:rotate-180" aria-hidden>⌄</span>
-                    </summary>
-                    {m.html && <div className="px-5 pb-5"><Html html={m.html} /></div>}
-                  </details>
-                ))}
-              </div>
-            ) : (
-              <Html html={programmeHtml} />
-            )}
+        {presentation && (
+          <SectionNumerotee numero={++n} titre="Présentation">
+            <Html html={presentation} />
           </SectionNumerotee>
         )}
 
-        {fiche?.modalites && (
-          <SectionNumerotee numero={++n} titre="Modalités">
-            <Encadre titre="Rythme & accès">{fiche.modalites}</Encadre>
+        {modules.length > 0 && (
+          <SectionNumerotee numero={++n} titre="Programme" sousTitre={`${modules.length} module${modules.length > 1 ? "s" : ""}`}>
+            <AccordeonProgramme modules={modules} />
           </SectionNumerotee>
         )}
 

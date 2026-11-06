@@ -1,15 +1,26 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { Fiche } from "@/lib/catalogue/assembler";
-import { EditeurMarkdown } from "./EditeurMarkdown";
+import type { ModuleProgramme } from "@/lib/programme";
+import { EditeurProgramme } from "./EditeurProgramme";
+import { EditeurRiche } from "./EditeurRiche";
 import type { Etat } from "./FormAction";
 
 type Action = (etat: Etat, formData: FormData) => Promise<Etat>;
 
-const AIDE_MD = "Markdown : **gras**, *italique*, listes avec « - », titres avec « ## ».";
-
-export function FormulaireFiche({ fiche, action, apercu }: { fiche: Fiche | null; action: Action; apercu: (md: string) => Promise<string> }) {
+export function FormulaireFiche({
+  fiche,
+  objectifHtml,
+  modules,
+  action,
+}: {
+  fiche: Fiche | null;
+  objectifHtml: string;
+  modules: ModuleProgramme[];
+  action: Action;
+}) {
   const [etat, envoyer, pending] = useActionState(action, null);
+  const [objectif, setObjectif] = useState(objectifHtml);
   const f = fiche;
   const champ = (nom: keyof Fiche, libelle: string, props: { placeholder?: string; aide?: string } = {}) => (
     <div>
@@ -25,57 +36,40 @@ export function FormulaireFiche({ fiche, action, apercu }: { fiche: Fiche | null
         {champ("titre", "Titre *")}
         {champ("slug", "Adresse de la page", { placeholder: "générée depuis le titre", aide: "/formations/<adresse> — minuscules et tirets" })}
         <div className="md:col-span-2">
-          <label className="label" htmlFor="resume">Résumé (cartes du catalogue)</label>
+          <label className="label" htmlFor="resume">Résumé (cartes du catalogue et bandeau de la fiche)</label>
           <textarea id="resume" name="resume" rows={2} maxLength={600} defaultValue={f?.resume ?? ""} className="input" />
         </div>
         {champ("categorie", "Catégorie affichée")}
-        {champ("duree", "Durée", { placeholder: "ex. 4 × 3 h (12 h)" })}
-        <div>
-          <label className="label" htmlFor="niveau">Niveau</label>
-          <select id="niveau" name="niveau" defaultValue={f?.niveau ?? ""} className="input">
-            <option value="">Non précisé</option>
-            <option value="debutant">Débutant</option>
-            <option value="intermediaire">Intermédiaire</option>
-            <option value="avance">Avancé</option>
-          </select>
-        </div>
-        {champ("public_cible", "Public")}
-        {champ("prerequis", "Prérequis")}
-        {champ("modalites", "Modalités", { placeholder: "ex. Présentiel, en soirée" })}
-        <div>
-          <label className="label" htmlFor="ordre">Ordre d&apos;affichage</label>
-          <input id="ordre" name="ordre" type="number" min={0} defaultValue={f?.ordre ?? 0} className="input" />
-        </div>
-      </section>
-
-      <section className="card space-y-5 p-5">
-        <EditeurMarkdown nom="contenu" libelle="Présentation" valeur={f?.contenu ?? ""} lignes={10} aide={AIDE_MD} apercu={apercu} />
-        <EditeurMarkdown nom="objectifs" libelle="Objectif (mis en avant en tête de fiche)" valeur={f?.objectifs ?? ""} apercu={apercu} />
-        <EditeurMarkdown
-          nom="programme"
-          libelle="Programme"
-          valeur={f?.programme ?? ""}
-          lignes={10}
-          aide="Commencez chaque module par « ## Module 1 : titre » pour l'afficher en accordéon numéroté."
-          apercu={apercu}
-        />
-      </section>
-
-      <section className="card flex flex-wrap items-center gap-6 p-5">
-        <div>
-          <label className="label" htmlFor="visuel">Visuel</label>
-          <input id="visuel" name="visuel" type="file" accept="image/jpeg,image/png,image/webp" className="text-sm" />
-          <p className="mt-1 text-xs text-muted">JPEG, PNG ou WebP, 3 Mo max.</p>
-        </div>
-        {f?.visuel_url && (
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={f.visuel_url} alt="" className="h-16 w-28 rounded object-cover" />
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="retirer_visuel" /> Retirer
-            </label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label" htmlFor="niveau">Niveau</label>
+            <select id="niveau" name="niveau" defaultValue={f?.niveau ?? ""} className="input">
+              <option value="">Non précisé</option>
+              <option value="debutant">Débutant</option>
+              <option value="intermediaire">Intermédiaire</option>
+              <option value="avance">Avancé</option>
+            </select>
           </div>
-        )}
+          <div>
+            <label className="label" htmlFor="ordre">Ordre d&apos;affichage</label>
+            <input id="ordre" name="ordre" type="number" min={0} defaultValue={f?.ordre ?? 0} className="input" />
+          </div>
+        </div>
+      </section>
+
+      <section className="card space-y-2 p-5">
+        <h2 className="font-bold">Objectif</h2>
+        <p className="text-xs text-muted">Mis en avant en tête de la fiche.</p>
+        <input type="hidden" name="objectifs" value={objectif} />
+        <EditeurRiche valeur={objectifHtml} onChange={setObjectif} minHauteur={90} />
+      </section>
+
+      <section className="card space-y-3 p-5">
+        <div>
+          <h2 className="font-bold">Programme</h2>
+          <p className="text-xs text-muted">Chaque module s&apos;affiche en accordéon numéroté sur le portail. Cliquez sur un module pour le modifier.</p>
+        </div>
+        <EditeurProgramme initiaux={modules} />
       </section>
 
       <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-4 border-t border-line bg-surface-2/95 px-4 py-3 backdrop-blur">
