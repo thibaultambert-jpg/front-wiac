@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BoutonAction } from "@/components/BoutonAction";
+import { Hero } from "@/components/Hero";
 import { attentesUtilisateur } from "@/lib/attente";
 import { exigerUtilisateur } from "@/lib/auth";
 import { aujourdhui, formatPeriode } from "@/lib/dendreo/dates";
@@ -15,7 +16,7 @@ function Ligne({ s, children }: { s: Session; children?: React.ReactNode }) {
   return (
     <li className="card flex flex-wrap items-center justify-between gap-3 p-4">
       <div>
-        <Link href={`/sessions/${s.id}`} className="font-medium hover:text-accent">{s.intitule}</Link>
+        <Link href={`/sessions/${s.id}`} className="font-semibold hover:text-violet">{s.intitule}</Link>
         <p className="text-sm text-muted">
           {formatPeriode(s.debut, s.fin)}
           {s.lieux[0] && ` · ${s.lieux[0].intitule}`}
@@ -36,14 +37,15 @@ export default async function MesFormations() {
   const enAttente = sessionsAttente.filter((s) => s.debut.slice(0, 10) > jour);
 
   return (
-    <div className="space-y-10">
-      <h1 className="text-2xl font-semibold">Mes formations</h1>
+    <>
+    <Hero surtitre={<p className="eyebrow">Mon espace</p>} titre={<>Mes <span className="text-turquoise">formations</span></>} sousTitre={`Bonjour ${u.prenom || ""}, retrouvez vos inscriptions et vos listes d'attente.`} />
+    <div className="mx-auto max-w-5xl space-y-10 px-4 pt-10">
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">À venir</h2>
+        <h2 className="titre-section text-xl">À venir</h2>
         {aVenir.length === 0 ? (
           <p className="text-sm text-muted">
-            Aucune inscription à venir. <Link href="/formations" className="text-accent hover:underline">Parcourir le catalogue</Link>
+            Aucune inscription à venir. <Link href="/formations" className="font-semibold text-violet hover:underline">Parcourir le catalogue</Link>
           </p>
         ) : (
           <ul className="space-y-3">
@@ -68,7 +70,7 @@ export default async function MesFormations() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Listes d&apos;attente</h2>
+        <h2 className="titre-section text-xl">Listes d&apos;attente</h2>
         {enAttente.length === 0 ? (
           <p className="text-sm text-muted">Vous n&apos;êtes sur aucune liste d&apos;attente.</p>
         ) : (
@@ -87,7 +89,7 @@ export default async function MesFormations() {
 
       {passees.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Formations suivies</h2>
+          <h2 className="titre-section text-xl">Formations suivies</h2>
           <ul className="space-y-3">
             {passees.map((s) => (
               <Ligne key={s.id} s={s} />
@@ -96,5 +98,6 @@ export default async function MesFormations() {
         </section>
       )}
     </div>
+    </>
   );
 }

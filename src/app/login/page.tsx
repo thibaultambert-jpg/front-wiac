@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { utilisateurCourant } from "@/lib/auth";
 import { cheminInterne } from "@/lib/chemins";
@@ -13,15 +14,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { suite, erreur } = await searchParams;
   if (await utilisateurCourant()) redirect(cheminInterne(suite));
   return (
-    <main className="min-h-dvh grid place-items-center px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8 shadow-sm">
-        <p className="text-sm font-medium text-accent">Wiacademy</p>
-        <h1 className="mt-1 text-2xl font-semibold">Formations internes</h1>
+    <main className="grid min-h-dvh place-items-center bg-violet px-4">
+      <div className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-xl">
+        <Image src="/logo-wiacademy.png" alt="WiAcademy by Wavestone" width={170} height={43} priority />
+        <h1 className="mt-6 text-2xl font-extrabold tracking-tight">Formations internes</h1>
         <p className="mt-2 text-sm text-muted">
           Consultez les formations inter et inscrivez-vous avec votre compte Google professionnel.
         </p>
         {erreur && ERREURS[erreur] && (
-          <p role="alert" className="mt-4 rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
+          <p role="alert" className="mt-4 rounded-xl bg-danger-soft px-3 py-2 text-sm text-danger">
             {ERREURS[erreur]}
           </p>
         )}
