@@ -13,7 +13,7 @@ import { formationParSlug } from "@/lib/catalogue";
 import { themeCategorie } from "@/lib/couleurs";
 import { formatPeriode } from "@/lib/dendreo/dates";
 import { nettoyerHtml } from "@/lib/dendreo/html";
-import { decouperProgramme, markdownVersHtml } from "@/lib/markdown";
+import { markdownVersHtml } from "@/lib/markdown";
 import { estHtml, modulesDeFiche } from "@/lib/programme";
 import { idsSessionsInscrit } from "@/lib/mes-formations";
 
@@ -44,10 +44,7 @@ export default async function PageFormation({ params }: Props) {
   // Sans fiche BO : description Dendreo de la prochaine session.
   const presentation = fiche ? "" : nettoyerHtml(prochaine?.descriptionHtml);
   const objectifs = !fiche?.objectifs ? "" : estHtml(fiche.objectifs) ? nettoyerHtml(fiche.objectifs) : markdownVersHtml(fiche.objectifs);
-  let modules = modulesDeFiche(fiche?.programme_modules).map((m) => ({ ...m, contenu: nettoyerHtml(m.contenu) }));
-  if (modules.length === 0 && fiche?.programme) {
-    modules = (decouperProgramme(fiche.programme) ?? []).map((m) => ({ titre: m.titre, sous_titre: "", contenu: m.html }));
-  }
+  const modules = modulesDeFiche(fiche?.programme_modules).map((m) => ({ ...m, contenu: nettoyerHtml(m.contenu) }));
   let n = 0;
 
   return (

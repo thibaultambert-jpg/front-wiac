@@ -7,16 +7,9 @@ export type Fiche = {
   slug: string;
   titre: string;
   resume: string;
-  contenu: string;
   objectifs: string;
-  public_cible: string;
-  prerequis: string;
-  programme: string;
   programme_modules: unknown;
-  duree: string;
   niveau: "" | "debutant" | "intermediaire" | "avance";
-  modalites: string;
-  visuel_url: string | null;
   categorie: string;
   publiee: boolean;
   ordre: number;

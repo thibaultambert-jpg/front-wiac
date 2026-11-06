@@ -5,7 +5,7 @@ import { FormAction } from "@/components/FormAction";
 import { FormulaireFiche } from "@/components/FormulaireFiche";
 import type { Fiche } from "@/lib/catalogue";
 import { supabaseAdmin } from "@/lib/supabase/server";
-import { decouperProgramme, markdownVersHtml } from "@/lib/markdown";
+import { markdownVersHtml } from "@/lib/markdown";
 import { estHtml, modulesDeFiche } from "@/lib/programme";
 import { enregistrerFiche, lierModule, supprimerFiche } from "../../actions";
 
@@ -31,12 +31,9 @@ export default async function EditionFiche({ params }: { params: Promise<{ id: s
     });
   }
 
-  // Anciennes fiches : objectif en Markdown et programme en Markdown à titres « ## » → convertis pour l'éditeur.
+  // Objectif saisi avant l'éditeur riche (Markdown) → converti en HTML pour l'éditeur.
   const objectifHtml = estHtml(fiche?.objectifs) ? fiche!.objectifs : markdownVersHtml(fiche?.objectifs);
-  let modules = modulesDeFiche(fiche?.programme_modules);
-  if (modules.length === 0 && fiche?.programme) {
-    modules = (decouperProgramme(fiche.programme) ?? []).map((m) => ({ titre: m.titre, sous_titre: "", contenu: m.html }));
-  }
+  const modules = modulesDeFiche(fiche?.programme_modules);
 
   return (
     <div className="space-y-6">
