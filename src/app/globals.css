@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f1f0ec;
+  --ink: #1c1b19;
+  --muted: #6b6860;
+  --line: #e4e2dc;
+  --accent: #d6336c;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbe7ef;
+  --ok: #1f7a4d;
+  --ok-soft: #e3f3ea;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413;
+    --surface: #1d1c1a;
+    --surface-2: #262522;
+    --ink: #f0eee9;
+    --muted: #a39f96;
+    --line: #34322e;
+    --accent: #f06595;
+    --accent-ink: #1c1b19;
+    --accent-soft: #3a1f2a;
+    --ok: #5cc28d;
+    --ok-soft: #1b2e24;
+    --warn: #e0a84a;
+    --warn-soft: #33281a;
+    --danger: #f1786d;
+    --danger-soft: #3a1f1c;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+  }
+  .btn-primary { @apply bg-accent text-accent-ink hover:opacity-90; }
+  .btn-secondary { @apply border border-line bg-surface text-ink hover:bg-surface-2; }
+  .btn-danger { @apply border border-danger/40 bg-surface text-danger hover:bg-danger-soft; }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .card { @apply rounded-xl border border-line bg-surface; }
+  .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium; }
+  .input { @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-2 focus:outline-accent; }
+  .label { @apply mb-1 block text-sm font-medium; }
+  .prose-fiche { @apply text-[15px] leading-relaxed; }
+  .prose-fiche p { @apply my-3; }
+  .prose-fiche ul { @apply my-3 list-disc pl-6; }
+  .prose-fiche ol { @apply my-3 list-decimal pl-6; }
+  .prose-fiche li { @apply my-1; }
+  .prose-fiche h2 { @apply mt-6 mb-2 text-lg font-semibold; }
+  .prose-fiche h3 { @apply mt-5 mb-2 font-semibold; }
+  .prose-fiche a { @apply text-accent underline; }
+  .prose-fiche strong, .prose-fiche b { @apply font-semibold; }
+}
+
+/* FullCalendar aux couleurs du thème */
+.fc {
+  --fc-border-color: var(--line);
+  --fc-page-bg-color: var(--surface);
+  --fc-neutral-bg-color: var(--surface-2);
+  --fc-today-bg-color: var(--accent-soft);
+  --fc-button-bg-color: var(--surface);
+  --fc-button-border-color: var(--line);
+  --fc-button-text-color: var(--ink);
+  --fc-button-hover-bg-color: var(--surface-2);
+  --fc-button-hover-border-color: var(--line);
+  --fc-button-active-bg-color: var(--accent-soft);
+  --fc-button-active-border-color: var(--accent);
+  --fc-event-border-color: transparent;
+  font-size: 0.875rem;
+}
+.fc .fc-toolbar-title { font-size: 1.125rem; font-weight: 600; text-transform: capitalize; }
+.fc .fc-button { text-transform: capitalize; box-shadow: none !important; }
+.fc .fc-event { cursor: pointer; }
