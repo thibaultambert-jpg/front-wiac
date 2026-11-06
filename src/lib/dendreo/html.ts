@@ -4,7 +4,7 @@ import sanitizeHtml from "sanitize-html";
 /** HTML Dendreo ou Markdown rendu : on ne garde que la mise en forme, sans styles ni classes. */
 export function nettoyerHtml(html: string | undefined | null): string {
   return sanitizeHtml(html ?? "", {
-    allowedTags: ["p", "br", "strong", "b", "em", "i", "u", "ul", "ol", "li", "a", "h2", "h3", "h4", "blockquote", "code", "pre", "hr", "img"],
+    allowedTags: ["p", "br", "strong", "b", "em", "i", "u", "s", "ul", "ol", "li", "a", "h2", "h3", "h4", "blockquote", "code", "pre", "hr", "img"],
     allowedAttributes: { a: ["href", "target", "rel"], img: ["src", "alt"] },
     allowedSchemes: ["https", "mailto"],
     transformTags: { a: sanitizeHtml.simpleTransform("a", { target: "_blank", rel: "noopener noreferrer" }) },

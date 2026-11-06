@@ -5,13 +5,13 @@ import { z } from "zod";
 import type { Etat } from "@/components/FormAction";
 import { changerStatut, reordonner } from "@/lib/attente";
 import { exigerAdmin } from "@/lib/auth";
-import { texteBrut } from "@/lib/dendreo/html";
+import { nettoyerHtml, texteBrut } from "@/lib/dendreo/html";
 import { InscriptionImpossible } from "@/lib/dendreo/inscription";
 import { sessionsAVenir } from "@/lib/dendreo/sessions";
 import { inscrireProfil } from "@/lib/inscriptions";
 import { journaliser } from "@/lib/journal";
 import { titreSansPrefixe } from "@/lib/catalogue/assembler";
-import { markdownVersHtml } from "@/lib/markdown";
+import { normaliserModules } from "@/lib/programme";
 import { slugifier } from "@/lib/slug";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { synchroniserModules } from "@/lib/sync-modules";
@@ -120,19 +120,11 @@ const FICHE = z.object({
   slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Adresse : minuscules, chiffres et tirets uniquement."),
   resume: z.string().max(600),
   categorie: z.string().max(100),
-  duree: z.string().max(200),
   niveau: z.enum(["", "debutant", "intermediaire", "avance"]),
-  public_cible: z.string().max(1000),
-  prerequis: z.string().max(1000),
-  modalites: z.string().max(1000),
-  contenu: z.string().max(50000),
   objectifs: z.string().max(20000),
-  programme: z.string().max(50000),
   ordre: z.coerce.number().int().min(0).max(9999),
   publiee: z.boolean(),
 });
-
-const MIME_IMAGES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export async function enregistrerFiche(_: Etat, f: FormData): Promise<Etat> {
   const admin = await exigerAdmin();
@@ -144,33 +136,20 @@ export async function enregistrerFiche(_: Etat, f: FormData): Promise<Etat> {
     slug: texte(f, "slug") || slugifier(texte(f, "titre")),
     resume: texte(f, "resume"),
     categorie: texte(f, "categorie"),
-    duree: texte(f, "duree"),
     niveau: texte(f, "niveau"),
-    public_cible: texte(f, "public_cible"),
-    prerequis: texte(f, "prerequis"),
-    modalites: texte(f, "modalites"),
-    contenu: String(f.get("contenu") ?? ""),
     objectifs: String(f.get("objectifs") ?? ""),
-    programme: String(f.get("programme") ?? ""),
     ordre: texte(f, "ordre") || "0",
     publiee: f.get("publiee") === "on",
   });
   if (!parse.success) return { ok: false, message: parse.error.issues[0]?.message ?? "Champs invalides." };
-  const valeurs: Record<string, unknown> = { ...parse.data };
+  const programme = normaliserModules(f.get("programme_modules") ?? "[]");
+  if (!programme.ok) return { ok: false, message: programme.message };
+  const valeurs: Record<string, unknown> = {
+    ...parse.data,
+    objectifs: nettoyerHtml(parse.data.objectifs),
+    programme_modules: programme.modules,
+  };
   const db = supabaseAdmin();
-
-  const visuel = f.get("visuel");
-  if (visuel instanceof File && visuel.size > 0) {
-    if (!MIME_IMAGES.has(visuel.type)) return { ok: false, message: "Visuel : JPEG, PNG ou WebP uniquement." };
-    if (visuel.size > 3 * 1024 * 1024) return { ok: false, message: "Visuel : 3 Mo maximum." };
-    const ext = visuel.type.split("/")[1].replace("jpeg", "jpg");
-    const chemin = `${parse.data.slug}-${Date.now()}.${ext}`;
-    const { error } = await db.storage.from("visuels").upload(chemin, visuel, { contentType: visuel.type, upsert: false });
-    if (error) return echec(error, "Envoi du visuel impossible");
-    valeurs.visuel_url = db.storage.from("visuels").getPublicUrl(chemin).data.publicUrl;
-  } else if (f.get("retirer_visuel") === "on") {
-    valeurs.visuel_url = null;
-  }
 
   const req = nouvelle ? db.from("formations").insert(valeurs).select("id").single() : db.from("formations").update(valeurs).eq("id", id).select("id").single();
   const { data, error } = await req;
@@ -194,12 +173,6 @@ export async function supprimerFiche(_: Etat, f: FormData): Promise<Etat> {
   await journaliser({ acteur: admin.email, action: "fiche_supprimee", details: { id, titre: data?.titre } });
   revalidatePath("/formations");
   redirect("/admin/formations");
-}
-
-/** Aperçu Markdown (même rendu que le portail). */
-export async function apercuMarkdown(md: string): Promise<string> {
-  await exigerAdmin();
-  return markdownVersHtml(md.slice(0, 50000));
 }
 
 // --- Listes d'attente -------------------------------------------------------

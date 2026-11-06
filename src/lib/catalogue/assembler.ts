@@ -12,6 +12,7 @@ export type Fiche = {
   public_cible: string;
   prerequis: string;
   programme: string;
+  programme_modules: unknown;
   duree: string;
   niveau: "" | "debutant" | "intermediaire" | "avance";
   modalites: string;

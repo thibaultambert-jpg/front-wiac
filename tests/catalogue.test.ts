@@ -5,7 +5,7 @@ import { brut } from "./fixtures";
 
 const fiche = (p: Partial<Fiche>): Fiche => ({
   id: "f1", slug: "product-builder", titre: "Product Builder", resume: "", contenu: "", objectifs: "", public_cible: "", prerequis: "",
-  programme: "", duree: "", niveau: "", modalites: "", visuel_url: null, categorie: "IA", publiee: true, ordre: 0, ...p,
+  programme: "", programme_modules: [], duree: "", niveau: "", modalites: "", visuel_url: null, categorie: "IA", publiee: true, ordre: 0, ...p,
 });
 
 describe("construireCatalogue", () => {
