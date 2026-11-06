@@ -1,51 +1,45 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
+/* Charte WiAcademy (site public) : violet profond, vert du logo, turquoise pour les actions secondaires. */
 :root {
-  --bg: #f7f7f5;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f1f0ec;
-  --ink: #1c1b19;
-  --muted: #6b6860;
-  --line: #e4e2dc;
-  --accent: #d6336c;
+  --surface-2: #f7f5ff;
+  --lavande: #e8e3fa;
+  --ink: #16123a;
+  --muted: #6b6787;
+  --line: #e8e5f6;
+  --violet: #461dc8;
+  --violet-fonce: #36159e;
+  --violet-soft: #efeafe;
+  --vert: #05ef67;
+  --turquoise: #3ad6b4;
+  --turquoise-ink: #0b3b35;
+  --accent: var(--violet);
   --accent-ink: #ffffff;
-  --accent-soft: #fbe7ef;
-  --ok: #1f7a4d;
-  --ok-soft: #e3f3ea;
-  --warn: #9a5b00;
-  --warn-soft: #fbf0dc;
-  --danger: #b42318;
-  --danger-soft: #fdecea;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #141413;
-    --surface: #1d1c1a;
-    --surface-2: #262522;
-    --ink: #f0eee9;
-    --muted: #a39f96;
-    --line: #34322e;
-    --accent: #f06595;
-    --accent-ink: #1c1b19;
-    --accent-soft: #3a1f2a;
-    --ok: #5cc28d;
-    --ok-soft: #1b2e24;
-    --warn: #e0a84a;
-    --warn-soft: #33281a;
-    --danger: #f1786d;
-    --danger-soft: #3a1f1c;
-  }
+  --accent-soft: var(--violet-soft);
+  --ok: #138a4f;
+  --ok-soft: #e1f8ec;
+  --warn: #a35a00;
+  --warn-soft: #fff1d9;
+  --danger: #c4193f;
+  --danger-soft: #ffe8ee;
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-lavande: var(--lavande);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-violet: var(--violet);
+  --color-violet-fonce: var(--violet-fonce);
+  --color-violet-soft: var(--violet-soft);
+  --color-vert: var(--vert);
+  --color-turquoise: var(--turquoise);
+  --color-turquoise-ink: var(--turquoise-ink);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
@@ -55,9 +49,10 @@
   --color-warn-soft: var(--warn-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
+html { color-scheme: light; }
 body {
   background: var(--bg);
   color: var(--ink);
@@ -65,43 +60,51 @@ body {
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet;
   }
-  .btn-primary { @apply bg-accent text-accent-ink hover:opacity-90; }
-  .btn-secondary { @apply border border-line bg-surface text-ink hover:bg-surface-2; }
-  .btn-danger { @apply border border-danger/40 bg-surface text-danger hover:bg-danger-soft; }
-  .btn-sm { @apply px-3 py-1.5 text-xs; }
-  .card { @apply rounded-xl border border-line bg-surface; }
-  .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium; }
-  .input { @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-2 focus:outline-accent; }
-  .label { @apply mb-1 block text-sm font-medium; }
-  .prose-fiche { @apply text-[15px] leading-relaxed; }
+  .btn-primary { @apply bg-violet text-white hover:bg-violet-fonce; }
+  .btn-turquoise { @apply bg-turquoise text-turquoise-ink hover:brightness-95; }
+  .btn-secondary { @apply border border-line bg-white text-ink hover:border-violet hover:text-violet; }
+  .btn-blanc { @apply border border-white/70 bg-transparent text-white hover:bg-white/10; }
+  .btn-danger { @apply border border-danger/40 bg-white text-danger hover:bg-danger-soft; }
+  .btn-sm { @apply px-3.5 py-1.5 text-xs; }
+  .card { @apply rounded-2xl border border-line bg-white shadow-[0_2px_12px_rgba(70,29,200,0.06)]; }
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .chip { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide; }
+  .eyebrow { @apply flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-turquoise before:h-px before:w-6 before:bg-turquoise; }
+  .input { @apply w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-2 focus:outline-violet; }
+  .label { @apply mb-1 block text-xs font-bold uppercase tracking-wide text-muted; }
+  .titre-section { @apply text-2xl font-extrabold tracking-tight; }
+  .prose-fiche { @apply text-[15px] leading-relaxed text-ink/85; }
   .prose-fiche p { @apply my-3; }
-  .prose-fiche ul { @apply my-3 list-disc pl-6; }
-  .prose-fiche ol { @apply my-3 list-decimal pl-6; }
+  .prose-fiche ul { @apply my-3 list-disc pl-6 marker:text-violet; }
+  .prose-fiche ol { @apply my-3 list-decimal pl-6 marker:text-violet; }
   .prose-fiche li { @apply my-1; }
-  .prose-fiche h2 { @apply mt-6 mb-2 text-lg font-semibold; }
-  .prose-fiche h3 { @apply mt-5 mb-2 font-semibold; }
-  .prose-fiche a { @apply text-accent underline; }
-  .prose-fiche strong, .prose-fiche b { @apply font-semibold; }
+  .prose-fiche h2 { @apply mt-6 mb-2 text-lg font-bold text-ink; }
+  .prose-fiche h3 { @apply mt-5 mb-2 font-bold text-ink; }
+  .prose-fiche a { @apply text-violet underline; }
+  .prose-fiche strong, .prose-fiche b { @apply font-semibold text-ink; }
 }
 
-/* FullCalendar aux couleurs du thème */
+/* FullCalendar aux couleurs de la charte */
 .fc {
   --fc-border-color: var(--line);
-  --fc-page-bg-color: var(--surface);
+  --fc-page-bg-color: #fff;
   --fc-neutral-bg-color: var(--surface-2);
-  --fc-today-bg-color: var(--accent-soft);
-  --fc-button-bg-color: var(--surface);
+  --fc-today-bg-color: var(--violet-soft);
+  --fc-button-bg-color: #fff;
   --fc-button-border-color: var(--line);
   --fc-button-text-color: var(--ink);
-  --fc-button-hover-bg-color: var(--surface-2);
-  --fc-button-hover-border-color: var(--line);
-  --fc-button-active-bg-color: var(--accent-soft);
-  --fc-button-active-border-color: var(--accent);
+  --fc-button-hover-bg-color: var(--violet-soft);
+  --fc-button-hover-border-color: var(--violet);
+  --fc-button-active-bg-color: var(--violet);
+  --fc-button-active-border-color: var(--violet);
   --fc-event-border-color: transparent;
   font-size: 0.875rem;
 }
-.fc .fc-toolbar-title { font-size: 1.125rem; font-weight: 600; text-transform: capitalize; }
-.fc .fc-button { text-transform: capitalize; box-shadow: none !important; }
-.fc .fc-event { cursor: pointer; }
+.fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 800; text-transform: capitalize; }
+.fc .fc-button { text-transform: capitalize; box-shadow: none !important; border-radius: 9999px !important; padding: 0.35rem 0.9rem; font-weight: 600; }
+.fc .fc-button-active { color: #fff !important; }
+.fc .fc-button-group > .fc-button:not(:last-child) { margin-right: 4px; }
+.fc .fc-event { cursor: pointer; border-radius: 6px; padding: 1px 3px; }
+.fc .fc-col-header-cell-cushion { text-transform: capitalize; font-weight: 700; color: var(--muted); }

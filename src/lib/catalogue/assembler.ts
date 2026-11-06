@@ -13,6 +13,7 @@ export type Fiche = {
   prerequis: string;
   programme: string;
   duree: string;
+  niveau: "" | "debutant" | "intermediaire" | "avance";
   modalites: string;
   visuel_url: string | null;
   categorie: string;
@@ -29,6 +30,9 @@ export type FormationCatalogue = {
   idModules: string[];
   sessions: Session[];
 };
+
+/** « WIVOO - Data for PM 2 » → « Data for PM 2 » (préfixe interne de Dendreo). */
+export const titreSansPrefixe = (t: string) => t.replace(/^WIVOO\s*[-–]\s*/i, "").trim() || t;
 
 export const slugModule = (idModule: string) => `module-${idModule}`;
 
@@ -77,7 +81,7 @@ export function construireCatalogue(
       const cle = mod ? slugModule(mod.id) : `session-${session.id}`;
       e = entree(cle, () => ({
         slug: cle,
-        titre: mod?.intitule || session.intitule,
+        titre: titreSansPrefixe(mod?.intitule || session.intitule),
         categorie: session.categorie,
         idCategorie: session.idCategorie,
         fiche: null,

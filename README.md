@@ -18,7 +18,7 @@ Portail où les collaborateurs consultent les formations **INTER** programmées 
 **Back-office (`/admin`, rôle admin)**
 - Tableau de bord : remplissage, places restantes, sessions sous le minimum, demande non satisfaite (listes d'attente par formation), inscriptions par mois, export CSV.
 - Listes d'attente : ordre par glisser-déposer, **Inscrire** (crée l'inscription Dendreo, option « dépasser la capacité »), **Retirer**.
-- Fiches formation : éditeur Markdown avec aperçu, visuel, publication, modules liés.
+- Fiches formation : niveau, éditeur Markdown avec aperçu (programme en accordéon avec des titres `## Module`), visuel, publication, modules liés.
 - Formations détectées : synchronisation des modules Dendreo (bouton + cron quotidien), créer une fiche, lier à une fiche, ignorer.
 - Journal de toutes les actions.
 
@@ -31,7 +31,7 @@ Portail où les collaborateurs consultent les formations **INTER** programmées 
 
 ## Mise en route
 
-1. **Supabase** : créer un projet, puis appliquer `supabase/migrations/20261106000000_init.sql` (SQL editor ou `supabase db push`).
+1. **Supabase** : créer un projet, puis appliquer les fichiers de `supabase/migrations/` dans l'ordre (SQL editor ou `supabase db push`).
 2. **Google** : dans Supabase › Authentication › Providers, activer Google avec un client OAuth de type « Web » de la console Google Cloud (écran de consentement **interne** au Workspace). URL de redirection Google : `https://<projet>.supabase.co/auth/v1/callback`.
 3. Supabase › Authentication › URL Configuration : ajouter `https://<votre-domaine>/auth/callback` (et `http://localhost:3000/auth/callback` en local) aux Redirect URLs.
 4. Copier `.env.example` en `.env.local` et renseigner les variables.

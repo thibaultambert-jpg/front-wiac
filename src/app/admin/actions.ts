@@ -10,6 +10,7 @@ import { InscriptionImpossible } from "@/lib/dendreo/inscription";
 import { sessionsAVenir } from "@/lib/dendreo/sessions";
 import { inscrireProfil } from "@/lib/inscriptions";
 import { journaliser } from "@/lib/journal";
+import { titreSansPrefixe } from "@/lib/catalogue/assembler";
 import { markdownVersHtml } from "@/lib/markdown";
 import { slugifier } from "@/lib/slug";
 import { supabaseAdmin } from "@/lib/supabase/server";
@@ -94,7 +95,7 @@ export async function creerFicheDepuisModule(_: Etat, f: FormData): Promise<Etat
   const { data: mod } = await db.from("modules_detectes").select("*").eq("id_module", idModule).maybeSingle();
   if (!mod) return { ok: false, message: "Module inconnu : lancez une synchronisation." };
   const session = (await sessionsAVenir()).find((s) => s.modules.some((m) => m.id === idModule));
-  const titre = String(mod.intitule).replace(/^WIVOO\s*-\s*/i, "").trim() || String(mod.intitule);
+  const titre = titreSansPrefixe(String(mod.intitule));
   const { data: fiche, error } = await db
     .from("formations")
     .insert({
@@ -120,6 +121,7 @@ const FICHE = z.object({
   resume: z.string().max(600),
   categorie: z.string().max(100),
   duree: z.string().max(200),
+  niveau: z.enum(["", "debutant", "intermediaire", "avance"]),
   public_cible: z.string().max(1000),
   prerequis: z.string().max(1000),
   modalites: z.string().max(1000),
@@ -143,6 +145,7 @@ export async function enregistrerFiche(_: Etat, f: FormData): Promise<Etat> {
     resume: texte(f, "resume"),
     categorie: texte(f, "categorie"),
     duree: texte(f, "duree"),
+    niveau: texte(f, "niveau"),
     public_cible: texte(f, "public_cible"),
     prerequis: texte(f, "prerequis"),
     modalites: texte(f, "modalites"),

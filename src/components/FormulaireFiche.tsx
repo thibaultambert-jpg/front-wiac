@@ -30,6 +30,15 @@ export function FormulaireFiche({ fiche, action, apercu }: { fiche: Fiche | null
         </div>
         {champ("categorie", "Catégorie affichée")}
         {champ("duree", "Durée", { placeholder: "ex. 4 × 3 h (12 h)" })}
+        <div>
+          <label className="label" htmlFor="niveau">Niveau</label>
+          <select id="niveau" name="niveau" defaultValue={f?.niveau ?? ""} className="input">
+            <option value="">Non précisé</option>
+            <option value="debutant">Débutant</option>
+            <option value="intermediaire">Intermédiaire</option>
+            <option value="avance">Avancé</option>
+          </select>
+        </div>
         {champ("public_cible", "Public")}
         {champ("prerequis", "Prérequis")}
         {champ("modalites", "Modalités", { placeholder: "ex. Présentiel, en soirée" })}
@@ -41,8 +50,15 @@ export function FormulaireFiche({ fiche, action, apercu }: { fiche: Fiche | null
 
       <section className="card space-y-5 p-5">
         <EditeurMarkdown nom="contenu" libelle="Présentation" valeur={f?.contenu ?? ""} lignes={10} aide={AIDE_MD} apercu={apercu} />
-        <EditeurMarkdown nom="objectifs" libelle="Objectifs" valeur={f?.objectifs ?? ""} apercu={apercu} />
-        <EditeurMarkdown nom="programme" libelle="Programme" valeur={f?.programme ?? ""} lignes={10} apercu={apercu} />
+        <EditeurMarkdown nom="objectifs" libelle="Objectif (mis en avant en tête de fiche)" valeur={f?.objectifs ?? ""} apercu={apercu} />
+        <EditeurMarkdown
+          nom="programme"
+          libelle="Programme"
+          valeur={f?.programme ?? ""}
+          lignes={10}
+          aide="Commencez chaque module par « ## Module 1 : titre » pour l'afficher en accordéon numéroté."
+          apercu={apercu}
+        />
       </section>
 
       <section className="card flex flex-wrap items-center gap-6 p-5">
@@ -62,9 +78,9 @@ export function FormulaireFiche({ fiche, action, apercu }: { fiche: Fiche | null
         )}
       </section>
 
-      <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-4 border-t border-line bg-bg/95 px-4 py-3 backdrop-blur">
+      <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-4 border-t border-line bg-surface-2/95 px-4 py-3 backdrop-blur">
         <label className="flex items-center gap-2 text-sm font-medium">
-          <input type="checkbox" name="publiee" defaultChecked={f?.publiee ?? false} className="accent-[var(--accent)]" />
+          <input type="checkbox" name="publiee" defaultChecked={f?.publiee ?? false} className="accent-[var(--violet)]" />
           Publiée sur le portail
         </label>
         <button type="submit" disabled={pending} className="btn btn-primary">{pending ? "Enregistrement…" : "Enregistrer"}</button>
