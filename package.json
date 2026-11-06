@@ -12,7 +12,7 @@
     "test": "vitest run"
   },
   "engines": {
-    "node": ">=20"
+    "node": "24.x"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.22",

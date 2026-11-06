@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  // sanitize-html dépend de modules Node : on le laisse hors du bundle serveur.
-  serverExternalPackages: ["sanitize-html"],
-};
+// sanitize-html est volontairement embarqué dans le bundle serveur : chargé en externe,
+// son require() de htmlparser2 (100 % ESM) échoue sur le runtime Vercel.
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
