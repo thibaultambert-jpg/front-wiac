@@ -17,7 +17,7 @@ Portail où les collaborateurs consultent les formations **INTER** programmées 
 
 **Back-office (`/admin`, rôle admin)**
 - Tableau de bord : remplissage, places restantes, sessions sous le minimum, demande non satisfaite (listes d'attente par formation), inscriptions par mois, export CSV.
-- Listes d'attente : ordre par glisser-déposer, **Inscrire** (crée l'inscription Dendreo + email si configuré, option « dépasser la capacité »), **Retirer**.
+- Listes d'attente : ordre par glisser-déposer, **Inscrire** (crée l'inscription Dendreo, option « dépasser la capacité »), **Retirer**.
 - Fiches formation : éditeur Markdown avec aperçu, visuel, publication, modules liés.
 - Formations détectées : synchronisation des modules Dendreo (bouton + cron quotidien), créer une fiche, lier à une fiche, ignorer.
 - Journal de toutes les actions.

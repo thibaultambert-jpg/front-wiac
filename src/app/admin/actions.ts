@@ -5,12 +5,9 @@ import { z } from "zod";
 import type { Etat } from "@/components/FormAction";
 import { changerStatut, reordonner } from "@/lib/attente";
 import { exigerAdmin } from "@/lib/auth";
-import { publicUrl } from "@/lib/config";
-import { formatPeriode } from "@/lib/dendreo/dates";
 import { texteBrut } from "@/lib/dendreo/html";
 import { InscriptionImpossible } from "@/lib/dendreo/inscription";
-import { sessionParId, sessionsAVenir } from "@/lib/dendreo/sessions";
-import { envoyerEmail } from "@/lib/email";
+import { sessionsAVenir } from "@/lib/dendreo/sessions";
 import { inscrireProfil } from "@/lib/inscriptions";
 import { journaliser } from "@/lib/journal";
 import { markdownVersHtml } from "@/lib/markdown";
@@ -222,18 +219,9 @@ export async function promouvoir(_: Etat, f: FormData): Promise<Etat> {
     const res = await inscrireProfil(profil, idAdf, { acteur: admin.email, forcer, via: "liste_attente" });
     await changerStatut(idLigne, "promu");
     await journaliser({ acteur: admin.email, action: "attente_promotion", idAdf, cible: profil.email, details: { forcee: forcer, statut: res.statut } });
-    const session = await sessionParId(idAdf);
-    const mail = await envoyerEmail({
-      a: profil.email,
-      sujet: `Une place s'est libérée : ${session?.intitule ?? "formation"}`,
-      texte:
-        `Bonjour ${profil.prenom || ""},\n\nBonne nouvelle : vous êtes désormais inscrit(e) à la session ` +
-        `« ${session?.intitule ?? idAdf} »${session ? ` ${formatPeriode(session.debut, session.fin)}` : ""}.\n\n` +
-        `Détails : ${publicUrl()}/sessions/${idAdf}\n\nL'équipe formation`,
-    });
     revalidatePath(`/admin/attente/${idAdf}`);
     revalidatePath("/admin/attente");
-    return { ok: true, message: `${profil.prenom || profil.email} inscrit(e) dans Dendreo${mail ? " et prévenu(e) par email" : ""}.` };
+    return { ok: true, message: `${profil.prenom || profil.email} inscrit(e) dans Dendreo. Pensez à la prévenir.` };
   } catch (e) {
     if (e instanceof InscriptionImpossible && e.code === "complet") {
       return { ok: false, message: "Session complète dans Dendreo : libérez une place ou cochez « dépasser la capacité »." };

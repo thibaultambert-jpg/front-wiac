@@ -44,7 +44,7 @@ export default async function AttenteSession({ params }: { params: Promise<{ id:
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">En attente ({attente.length})</h2>
-          <p className="text-sm text-muted">Glissez-déposez pour changer l&apos;ordre. « Inscrire » crée l&apos;inscription dans Dendreo et prévient la personne.</p>
+          <p className="text-sm text-muted">Glissez-déposez pour changer l&apos;ordre. « Inscrire » crée l&apos;inscription dans Dendreo (pensez à prévenir la personne).</p>
           <ListeAttenteAdmin
             key={attente.map((l) => l.id).join()}
             idAdf={id}

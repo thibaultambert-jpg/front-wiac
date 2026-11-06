@@ -150,13 +150,13 @@ export default async function PageSession({ params }: Props) {
             ) : rang ? (
               <div className="space-y-3">
                 <p className="rounded-lg bg-warn-soft px-3 py-2 text-sm text-warn">
-                  Vous êtes <strong>n°{rang}</strong> sur la liste d&apos;attente. L&apos;équipe formation vous contactera si une place se libère.
+                  Vous êtes <strong>n°{rang}</strong> sur la liste d&apos;attente. En cas de désistement, l&apos;équipe formation pourra vous inscrire.
                 </p>
                 <BoutonAction action={quitterAttente} session={id} libelle="Quitter la liste d'attente" enCours="…" variante="secondary" />
               </div>
             ) : session.places.complet ? (
               <div className="space-y-3">
-                <p className="text-sm text-muted">Cette session est complète. Inscrivez-vous sur la liste d&apos;attente pour être prévenu si une place se libère.</p>
+                <p className="text-sm text-muted">Cette session est complète. Rejoignez la liste d&apos;attente : en cas de désistement, l&apos;équipe formation pourra vous inscrire.</p>
                 <BoutonAction action={rejoindreAttente} session={id} libelle="Rejoindre la liste d'attente" enCours="Inscription…" avecCommentaire />
               </div>
             ) : (

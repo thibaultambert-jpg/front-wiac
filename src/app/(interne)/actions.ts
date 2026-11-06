@@ -34,7 +34,7 @@ export async function sInscrire(_: EtatAction, formData: FormData): Promise<Etat
     rafraichir(idAdf);
     return {
       ok: true,
-      message: res.statut === "deja_inscrit" ? "Vous étiez déjà inscrit à cette session." : "Inscription confirmée. Vous recevrez la convocation de l'équipe formation.",
+      message: res.statut === "deja_inscrit" ? "Vous étiez déjà inscrit à cette session." : "Inscription confirmée.",
     };
   } catch (e) {
     if (e instanceof InscriptionImpossible && e.code === "complet") {
@@ -70,7 +70,7 @@ export async function rejoindreAttente(_: EtatAction, formData: FormData): Promi
   await rejoindre(idAdf, u.id, commentaire);
   await journaliser({ acteur: u.email, action: "attente_ajout", idAdf, cible: u.email });
   rafraichir(idAdf);
-  return { ok: true, message: "Vous êtes sur la liste d'attente. L'équipe formation vous préviendra si une place se libère." };
+  return { ok: true, message: "Vous êtes sur la liste d'attente. Votre position est visible dans « Mes formations »." };
 }
 
 export async function quitterAttente(_: EtatAction, formData: FormData): Promise<EtatAction> {
