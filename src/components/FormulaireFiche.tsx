@@ -51,7 +51,7 @@ export function FormulaireFiche({
             </select>
           </div>
           <div>
-            <label className="label" htmlFor="ordre">Ordre d&apos;affichage</label>
+            <label className="label" htmlFor="ordre" title="Les cartes sont triées par niveau ; cet ordre départage les formations de même niveau.">Ordre (à niveau égal)</label>
             <input id="ordre" name="ordre" type="number" min={0} defaultValue={f?.ordre ?? 0} className="input" />
           </div>
         </div>

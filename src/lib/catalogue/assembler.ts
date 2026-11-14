@@ -28,6 +28,11 @@ export type FormationCatalogue = {
 /** « WIVOO - Data for PM 2 » → « Data for PM 2 » (préfixe interne de Dendreo). */
 export const titreSansPrefixe = (t: string) => t.replace(/^WIVOO\s*[-–]\s*/i, "").trim() || t;
 
+/** Rang de tri par niveau : Débutant, Intermédiaire, Avancé, puis non précisé. */
+export function rangNiveau(niveau: string | undefined | null): number {
+  return { debutant: 0, intermediaire: 1, avance: 2 }[niveau ?? ""] ?? 3;
+}
+
 export const slugModule = (idModule: string) => `module-${idModule}`;
 
 export function construireCatalogue(
@@ -88,9 +93,11 @@ export function construireCatalogue(
     e.sessions.push(session);
   }
 
-  return [...parCle.values()].sort((a, b) => {
-    const da = a.sessions[0]?.debut ?? "9999";
-    const db = b.sessions[0]?.debut ?? "9999";
-    return da.localeCompare(db) || (a.fiche?.ordre ?? 0) - (b.fiche?.ordre ?? 0) || a.titre.localeCompare(b.titre, "fr");
-  });
+  // Tri automatique par niveau ; l'ordre d'affichage de la fiche départage deux formations de même niveau.
+  return [...parCle.values()].sort(
+    (a, b) =>
+      rangNiveau(a.fiche?.niveau) - rangNiveau(b.fiche?.niveau) ||
+      (a.fiche?.ordre ?? 9999) - (b.fiche?.ordre ?? 9999) ||
+      a.titre.localeCompare(b.titre, "fr"),
+  );
 }

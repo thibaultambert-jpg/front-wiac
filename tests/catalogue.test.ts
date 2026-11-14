@@ -41,3 +41,18 @@ describe("construireCatalogue", () => {
     expect(c.map((f) => f.slug)).toEqual(["module-57"]);
   });
 });
+
+describe("tri du catalogue", () => {
+  it("trie par niveau puis par ordre d'affichage, quelle que soit la date des sessions", () => {
+    const fiches = [
+      fiche({ id: "a", slug: "avance", titre: "Avancé", niveau: "avance", ordre: 1 }),
+      fiche({ id: "i2", slug: "inter-2", titre: "Inter 2", niveau: "intermediaire", ordre: 20 }),
+      fiche({ id: "d", slug: "debutant", titre: "Débutant", niveau: "debutant", ordre: 99 }),
+      fiche({ id: "i1", slug: "inter-1", titre: "Inter 1", niveau: "intermediaire", ordre: 10 }),
+      fiche({ id: "n", slug: "sans-niveau", titre: "Sans niveau", niveau: "", ordre: 0 }),
+    ];
+    // La session la plus proche (353, 1er déc.) est liée à la fiche « Avancé » : elle reste après les autres niveaux.
+    const c = construireCatalogue(assemblerSessions(brut), fiches, [{ id_module: "57", formation_id: "a" }], new Set(["48"]));
+    expect(c.map((f) => f.slug)).toEqual(["debutant", "inter-1", "inter-2", "avance", "sans-niveau"]);
+  });
+});

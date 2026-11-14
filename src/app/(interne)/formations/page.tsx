@@ -107,7 +107,10 @@ export default async function PageFormations({ searchParams }: { searchParams: P
         ) : liste.length === 0 ? (
           <p className="card p-8 text-center text-muted">Aucune session avec des places disponibles pour le moment.</p>
         ) : (
-          [...groupes.entries()].map(([nom, formations]) => {
+          // Thématiques dans l'ordre du catalogue (plus petit « ordre d'affichage » des fiches du groupe).
+          [...groupes.entries()]
+            .sort(([, a], [, b]) => Math.min(...a.map((f) => f.fiche?.ordre ?? 9999)) - Math.min(...b.map((f) => f.fiche?.ordre ?? 9999)))
+            .map(([nom, formations]) => {
             const t = themeCategorie(nom, formations[0]?.idCategorie);
             const nbSessions = formations.reduce((n, fo) => n + fo.sessions.length, 0);
             return (
