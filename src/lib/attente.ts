@@ -98,13 +98,3 @@ export async function quitter(idAdf: string, userId: string): Promise<boolean> {
   if (error) throw error;
   return (data ?? []).length > 0;
 }
-
-/** Réordonne la liste d'une session selon l'ordre d'ids donné. */
-export async function reordonner(idAdf: string, ids: string[]): Promise<void> {
-  const db = supabaseAdmin();
-  const results = await Promise.all(
-    ids.map((id, i) => db.from("liste_attente").update({ position: i + 1 }).eq("id", id).eq("id_action_de_formation", idAdf)),
-  );
-  const erreur = results.find((r) => r.error)?.error;
-  if (erreur) throw erreur;
-}

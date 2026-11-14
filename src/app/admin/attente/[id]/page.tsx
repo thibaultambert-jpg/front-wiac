@@ -5,8 +5,10 @@ import { ListeAttenteAdmin } from "@/components/ListeAttenteAdmin";
 import { BadgePlaces, JaugePlaces } from "@/components/Places";
 import { attenteSession } from "@/lib/attente";
 import { formatPeriode } from "@/lib/dendreo/dates";
+import { lireSession } from "@/lib/dendreo/inscription";
+import { calculerPlaces } from "@/lib/dendreo/places";
 import { dendreo, sessionParId } from "@/lib/dendreo/sessions";
-import { promouvoir, reordonnerAttente, retirerDeLAttente } from "../../actions";
+import { promouvoir, promouvoirTous, retirerDeLAttente } from "../../actions";
 
 export const metadata: Metadata = { title: "Liste d'attente" };
 
@@ -16,10 +18,14 @@ export default async function AttenteSession({ params }: { params: Promise<{ id:
   const { id } = await params;
   const session = await sessionParId(id);
   if (!session) notFound();
-  const [attente, laps] = await Promise.all([
+  // Places relues en direct (sans cache) : décide si l'inscription se fait en surnombre.
+  const [attente, laps, placesDirect] = await Promise.all([
     attenteSession(id),
     dendreo().list("laps.php", { id_action_de_formation: id, include: "participant" }).catch(() => []),
+    lireSession(dendreo(), id).then(calculerPlaces).catch(() => null),
   ]);
+  const places = placesDirect ?? session.places;
+  const complet = places.complet;
   const inscrits = laps.map((l) => {
     const p = (l.participant ?? {}) as Record<string, unknown>;
     const nom = `${p.prenom ?? ""} ${p.nom ?? ""}`.trim();
@@ -33,10 +39,10 @@ export default async function AttenteSession({ params }: { params: Promise<{ id:
         <div>
           <h1 className="text-2xl font-semibold">{session.intitule}</h1>
           <p className="mt-1 text-muted">{formatPeriode(session.debut, session.fin)} · {session.numero}</p>
-          <div className="mt-2"><JaugePlaces places={session.places} /></div>
+          <div className="mt-2"><JaugePlaces places={places} /></div>
         </div>
         <div className="flex items-center gap-3">
-          <BadgePlaces places={session.places} />
+          <BadgePlaces places={places} />
           <Link href={`/sessions/${id}`} className="btn btn-secondary btn-sm">Page de la session ↗</Link>
         </div>
       </header>
@@ -44,11 +50,10 @@ export default async function AttenteSession({ params }: { params: Promise<{ id:
       <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">En attente ({attente.length})</h2>
-          <p className="text-sm text-muted">Glissez-déposez pour changer l&apos;ordre. « Inscrire » crée l&apos;inscription dans Dendreo (pensez à prévenir la personne).</p>
+          <p className="text-sm text-muted">Par ordre d&apos;arrivée. « Inscrire » crée l&apos;inscription dans Dendreo (pensez à prévenir la personne). Si la session est complète, l&apos;inscription se fait en surnombre, au-delà de la capacité.</p>
           <ListeAttenteAdmin
-            key={attente.map((l) => l.id).join()}
             idAdf={id}
-            complet={session.places.complet}
+            complet={complet}
             lignes={attente.map((l) => ({
               id: l.id,
               nom: `${l.profil?.prenom ?? ""} ${l.profil?.nom ?? ""}`.trim(),
@@ -56,8 +61,8 @@ export default async function AttenteSession({ params }: { params: Promise<{ id:
               commentaire: l.commentaire,
               depuis: DATE.format(new Date(l.created_at)),
             }))}
-            reordonner={reordonnerAttente}
             promouvoir={promouvoir}
+            promouvoirTous={promouvoirTous}
             retirer={retirerDeLAttente}
           />
         </section>

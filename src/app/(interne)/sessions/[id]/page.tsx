@@ -108,7 +108,6 @@ export default async function PageSession({ params }: Props) {
                       </p>
                     )}
                     {l.acces && <div className="prose-fiche mt-2 text-muted" dangerouslySetInnerHTML={{ __html: nettoyerHtml(l.acces) }} />}
-                    {l.accueil && <p className="mt-2 text-muted">{l.accueil}</p>}
                   </div>
                 ))}
               </div>

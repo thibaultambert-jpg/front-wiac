@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { Etat } from "@/components/FormAction";
-import { changerStatut, reordonner } from "@/lib/attente";
+import { attenteSession, changerStatut } from "@/lib/attente";
 import { exigerAdmin } from "@/lib/auth";
 import { nettoyerHtml, texteBrut } from "@/lib/dendreo/html";
 import { InscriptionImpossible } from "@/lib/dendreo/inscription";
@@ -177,11 +177,8 @@ export async function supprimerFiche(_: Etat, f: FormData): Promise<Etat> {
 
 // --- Listes d'attente -------------------------------------------------------
 
-export async function promouvoir(_: Etat, f: FormData): Promise<Etat> {
-  const admin = await exigerAdmin();
-  const idLigne = texte(f, "ligne");
-  if (!uuid.safeParse(idLigne).success) return { ok: false, message: "Ligne invalide." };
-  const forcer = texte(f, "forcer") === "1";
+/** Inscrit dans Dendreo une personne de la liste d'attente. `forcer` : inscription au-delà de la capacité. */
+async function promouvoirLigne(acteur: string, idLigne: string, forcer: boolean): Promise<{ ok: boolean; message: string; complet?: boolean }> {
   const db = supabaseAdmin();
   const { data: ligne } = await db
     .from("liste_attente")
@@ -191,19 +188,54 @@ export async function promouvoir(_: Etat, f: FormData): Promise<Etat> {
   const profil = (Array.isArray(ligne?.profil) ? ligne?.profil[0] : ligne?.profil) as { id: string; email: string; prenom: string; nom: string } | undefined;
   if (!ligne || !profil || ligne.statut !== "en_attente") return { ok: false, message: "Cette personne n'est plus en attente." };
   const idAdf = String(ligne.id_action_de_formation);
+  const nom = `${profil.prenom} ${profil.nom}`.trim() || profil.email;
   try {
-    const res = await inscrireProfil(profil, idAdf, { acteur: admin.email, forcer, via: "liste_attente" });
+    const res = await inscrireProfil(profil, idAdf, { acteur, forcer, via: "liste_attente" });
     await changerStatut(idLigne, "promu");
-    await journaliser({ acteur: admin.email, action: "attente_promotion", idAdf, cible: profil.email, details: { forcee: forcer, statut: res.statut } });
-    revalidatePath(`/admin/attente/${idAdf}`);
-    revalidatePath("/admin/attente");
-    return { ok: true, message: `${profil.prenom || profil.email} inscrit(e) dans Dendreo. Pensez à la prévenir.` };
+    await journaliser({ acteur, action: "attente_promotion", idAdf, cible: profil.email, details: { forcee: forcer, statut: res.statut } });
+    return { ok: true, message: `${nom} inscrit(e) dans Dendreo.` };
   } catch (e) {
     if (e instanceof InscriptionImpossible && e.code === "complet") {
-      return { ok: false, message: "Session complète dans Dendreo : libérez une place ou cochez « dépasser la capacité »." };
+      return { ok: false, complet: true, message: "Session complète dans Dendreo : utilisez « Inscrire en surnombre »." };
     }
-    return echec(e, "Inscription impossible");
+    return echec(e, `Inscription de ${nom} impossible`) ?? { ok: false, message: "Inscription impossible." };
   }
+}
+
+function rafraichirAttente(idAdf?: string) {
+  if (idAdf) revalidatePath(`/admin/attente/${idAdf}`);
+  revalidatePath("/admin/attente");
+}
+
+export async function promouvoir(_: Etat, f: FormData): Promise<Etat> {
+  const admin = await exigerAdmin();
+  const idLigne = texte(f, "ligne");
+  if (!uuid.safeParse(idLigne).success) return { ok: false, message: "Ligne invalide." };
+  const res = await promouvoirLigne(admin.email, idLigne, texte(f, "forcer") === "1");
+  rafraichirAttente(idNum(texte(f, "session")) ?? undefined);
+  return res.ok ? { ok: true, message: `${res.message} Pensez à la prévenir.` } : res;
+}
+
+/** Inscrit toutes les personnes en attente d'une session, dans l'ordre d'arrivée. */
+export async function promouvoirTous(_: Etat, f: FormData): Promise<Etat> {
+  const admin = await exigerAdmin();
+  const idAdf = idNum(texte(f, "session"));
+  if (!idAdf) return { ok: false, message: "Session invalide." };
+  const forcer = texte(f, "forcer") === "1";
+  const lignes = await attenteSession(idAdf);
+  let inscrits = 0;
+  const erreurs: string[] = [];
+  for (const l of lignes) {
+    const res = await promouvoirLigne(admin.email, l.id, forcer);
+    if (res.ok) inscrits++;
+    else if (res.complet) {
+      erreurs.push("session complète : les personnes restantes n'ont pas été inscrites");
+      break;
+    } else erreurs.push(res.message);
+  }
+  rafraichirAttente(idAdf);
+  const bilan = `${inscrits} personne${inscrits > 1 ? "s" : ""} inscrite${inscrits > 1 ? "s" : ""} dans Dendreo.`;
+  return erreurs.length ? { ok: inscrits > 0, message: `${bilan} ${erreurs.join(" ; ")}.` } : { ok: true, message: `${bilan} Pensez à les prévenir.` };
 }
 
 export async function retirerDeLAttente(_: Etat, f: FormData): Promise<Etat> {
@@ -216,17 +248,4 @@ export async function retirerDeLAttente(_: Etat, f: FormData): Promise<Etat> {
   revalidatePath(`/admin/attente/${ligne.id_action_de_formation}`);
   revalidatePath("/admin/attente");
   return { ok: true, message: "Retiré(e) de la liste." };
-}
-
-export async function reordonnerAttente(idAdf: string, ids: string[]): Promise<Etat> {
-  const admin = await exigerAdmin();
-  if (!idNum(idAdf) || !ids.every((i) => uuid.safeParse(i).success)) return { ok: false, message: "Ordre invalide." };
-  try {
-    await reordonner(idAdf, ids);
-    await journaliser({ acteur: admin.email, action: "attente_reordonnee", idAdf, details: { ordre: ids } });
-    revalidatePath(`/admin/attente/${idAdf}`);
-    return { ok: true, message: "Ordre enregistré." };
-  } catch (e) {
-    return echec(e);
-  }
 }
