@@ -71,31 +71,32 @@ export default async function PageFormations({ searchParams }: { searchParams: P
         }
         sousTitre="Choisissez une session parmi les prochaines dates et inscrivez-vous en un clic."
       >
-        <div className="flex flex-wrap items-center gap-3">
-        <div className="inline-flex rounded-full bg-white/10 p-1 text-sm" role="tablist" aria-label="Affichage">
-          {(["liste", "calendrier"] as const).map((v) => (
-            <Link
-              key={v}
-              href={lien(f, { vue: v === "liste" ? undefined : v })}
-              role="tab"
-              aria-selected={vue === v}
-              className={`rounded-full px-4 py-1.5 font-semibold ${vue === v ? "bg-white text-violet" : "text-white/80 hover:text-white"}`}
-            >
-              {v === "liste" ? "Liste" : "Calendrier"}
-            </Link>
-          ))}
-        </div>
-        <Link
-          href={lien(f, { dispo: f.dispo === "1" ? undefined : "1" })}
-          role="switch"
-          aria-checked={f.dispo === "1"}
-          className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${f.dispo === "1" ? "bg-turquoise text-turquoise-ink" : "bg-white/10 text-white/90 hover:text-white"}`}
-        >
-          <span className={`grid h-4 w-4 place-items-center rounded border ${f.dispo === "1" ? "border-turquoise-ink" : "border-white/70"}`} aria-hidden>
-            {f.dispo === "1" && "✓"}
-          </span>
-          Places disponibles
-        </Link>
+        <div className="flex flex-nowrap items-center gap-2 sm:gap-3">
+          <div className="inline-flex shrink-0 rounded-full bg-white/10 p-1 text-sm" role="tablist" aria-label="Affichage">
+            {(["liste", "calendrier"] as const).map((v) => (
+              <Link
+                key={v}
+                href={lien(f, { vue: v === "liste" ? undefined : v })}
+                role="tab"
+                aria-selected={vue === v}
+                className={`rounded-full px-3 py-1.5 font-semibold sm:px-4 ${vue === v ? "bg-white text-violet" : "text-white/80 hover:text-white"}`}
+              >
+                {v === "liste" ? "Liste" : "Calendrier"}
+              </Link>
+            ))}
+          </div>
+          <Link
+            href={lien(f, { dispo: f.dispo === "1" ? undefined : "1" })}
+            role="switch"
+            aria-checked={f.dispo === "1"}
+            aria-label="Afficher uniquement les sessions avec des places disponibles"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white/10 py-1.5 pl-1.5 pr-3 text-sm font-semibold text-white"
+          >
+            <span className={`relative h-6 w-10 rounded-full transition-colors ${f.dispo === "1" ? "bg-turquoise" : "bg-white/25"}`} aria-hidden>
+              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${f.dispo === "1" ? "left-[18px]" : "left-0.5"}`} />
+            </span>
+            Disponible
+          </Link>
         </div>
       </Hero>
 
