@@ -5,6 +5,7 @@ import { exigerUtilisateur } from "@/lib/auth";
 import { InscriptionImpossible } from "@/lib/dendreo/inscription";
 import { sessionParId } from "@/lib/dendreo/sessions";
 import { desinscrireProfil, inscrireProfil } from "@/lib/inscriptions";
+import { basculerInteret } from "@/lib/interets";
 import { journaliser } from "@/lib/journal";
 import { idsSessionsInscrit } from "@/lib/mes-formations";
 
@@ -80,4 +81,17 @@ export async function quitterAttente(_: EtatAction, formData: FormData): Promise
   if (await quitter(idAdf, u.id)) await journaliser({ acteur: u.email, action: "attente_retrait", idAdf, cible: u.email });
   rafraichir(idAdf);
   return { ok: true, message: "Vous avez quitté la liste d'attente." };
+}
+
+export async function signalerInteret(_: EtatAction, formData: FormData): Promise<EtatAction> {
+  const u = await exigerUtilisateur();
+  const formationId = String(formData.get("session") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(formationId)) return { ok: false, message: "Formation invalide." };
+  const interesse = await basculerInteret(formationId, u.id);
+  await journaliser({ acteur: u.email, action: interesse ? "interet_ajout" : "interet_retrait", cible: u.email, details: { formation_id: formationId } });
+  revalidatePath("/formations", "layout");
+  return {
+    ok: true,
+    message: interesse ? "C'est noté : l'équipe formation sait que cette formation vous intéresse." : "Votre intérêt a été retiré.",
+  };
 }

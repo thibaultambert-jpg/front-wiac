@@ -40,7 +40,7 @@ export function CarteFormation({
         <p className="mt-2 line-clamp-3 text-sm text-muted">{resume}</p>
 
         <div className="mt-4 flex-1 space-y-2">
-          {fo.sessions.length === 0 && <p className="text-xs font-semibold uppercase tracking-wide text-muted">Prochaines sessions à venir</p>}
+          {fo.sessions.length === 0 && <p className="text-xs font-semibold uppercase tracking-wide text-muted">Pas de session programmée</p>}
           {fo.sessions.slice(0, 2).map((s) => (
             <Link
               key={s.id}

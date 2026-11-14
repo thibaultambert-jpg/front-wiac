@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BoutonAction } from "@/components/BoutonAction";
-import { libelleMode } from "@/components/Mode";
 import { ChiffresHero, Hero } from "@/components/Hero";
 import { JaugePlaces } from "@/components/Places";
 import { themeCategorie } from "@/lib/couleurs";
@@ -50,14 +49,12 @@ export default async function PageSession({ params }: Props) {
         sousTitre={
           <span className="first-letter:uppercase">
             Session {formatPeriode(session.debut, session.fin)}
-            {session.numero && <span className="text-white/60"> · {session.numero}</span>}
           </span>
         }
       >
         <ChiffresHero
           items={[
             ["Créneaux", session.creneaux.length || ""],
-            ["Format", session.modes.map(libelleMode).join(", ")],
             ["Lieu", lieu ? (lieu.elearning ? "À distance" : lieu.ville || lieu.intitule) : ""],
             ["Places", session.places.max > 0 ? `${session.places.inscrits}/${session.places.max}` : ""],
             ["Statut", estInscrit ? "Inscrit" : rang ? `Attente n°${rang}` : session.places.complet ? "Complet" : "Ouvert"],
@@ -137,12 +134,6 @@ export default async function PageSession({ params }: Props) {
               <div>
                 <dt className="text-muted">Formateur{session.formateurs.length > 1 ? "s" : ""}</dt>
                 <dd className="font-medium">{session.formateurs.join(", ")}</dd>
-              </div>
-            )}
-            {session.modes.length > 0 && (
-              <div>
-                <dt className="text-muted">Format</dt>
-                <dd className="font-medium">{session.modes.map(libelleMode).join(", ")}</dd>
               </div>
             )}
             <div>

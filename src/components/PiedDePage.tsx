@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function PiedDePage() {
   return (
-    <footer className="mt-16 border-t border-line">
+    <footer className="mt-10 border-t border-line">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-4 py-10">
         <Image src="/logo-wiacademy.png" alt="WiAcademy by Wavestone" width={150} height={38} />
         <nav className="flex flex-wrap gap-6 text-sm text-violet">

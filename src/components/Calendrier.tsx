@@ -4,6 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import frLocale from "@fullcalendar/core/locales/fr";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export type EvenementCalendrier = {
   id: string;
@@ -18,15 +19,31 @@ export type EvenementCalendrier = {
 
 export function Calendrier({ evenements, date }: { evenements: EvenementCalendrier[]; date?: string }) {
   const router = useRouter();
+  const ref = useRef<FullCalendar>(null);
+  // Mobile : vue mensuelle seule, flèches de part et d'autre du mois.
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const maj = () => setMobile(mq.matches);
+    maj();
+    mq.addEventListener("change", maj);
+    return () => mq.removeEventListener("change", maj);
+  }, []);
+  useEffect(() => {
+    if (mobile) ref.current?.getApi().changeView("dayGridMonth");
+  }, [mobile]);
+
   return (
     <FullCalendar
+      ref={ref}
       plugins={[dayGridPlugin, timeGridPlugin]}
       locale={frLocale}
       initialView="dayGridMonth"
       initialDate={date}
-      headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek" }}
+      headerToolbar={mobile ? { left: "prev", center: "title", right: "next" } : { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek" }}
       height="auto"
-      dayMaxEvents={3}
+      dayMaxEvents={mobile ? 2 : 3}
+      dayHeaderFormat={mobile ? { weekday: "narrow" } : { weekday: "short" }}
       eventDisplay="block"
       displayEventTime={false}
       firstDay={1}
