@@ -1,14 +1,16 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { ListeInterets } from "@/components/ListeInterets";
 import { BadgePlaces } from "@/components/Places";
 import { comptesAttente } from "@/lib/attente";
 import { formatPeriode } from "@/lib/dendreo/dates";
+import { interetsParFormation } from "@/lib/interets";
 import { sessionsAVenir, sessionsParIds } from "@/lib/dendreo/sessions";
 
 export const metadata: Metadata = { title: "Listes d'attente" };
 
 export default async function ListesAttente() {
-  const comptes = await comptesAttente();
+  const [comptes, interets] = await Promise.all([comptesAttente(), interetsParFormation()]);
   const aVenir = await sessionsAVenir();
   const connues = new Set(aVenir.map((s) => s.id));
   const autres = await sessionsParIds([...comptes.keys()].filter((id) => !connues.has(id)));
@@ -42,6 +44,14 @@ export default async function ListesAttente() {
           ))}
         </ul>
       )}
+
+      <section className="space-y-3 pt-4">
+        <div>
+          <h2 className="text-xl font-semibold">Formations qui intéressent</h2>
+          <p className="mt-1 text-sm text-muted">Formations sans session programmée pour lesquelles des collaborateurs ont cliqué « La formation m&apos;intéresse ». Cliquez pour voir les noms.</p>
+        </div>
+        <ListeInterets interets={interets} />
+      </section>
     </div>
   );
 }

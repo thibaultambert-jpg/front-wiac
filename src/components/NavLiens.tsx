@@ -6,7 +6,7 @@ export function NavLiens({ liens }: { liens: [string, string][] }) {
   const chemin = usePathname();
   const actif = (href: string) => (href === "/admin" ? chemin === "/admin" : chemin === href || chemin.startsWith(`${href}/`));
   return (
-    <nav className="flex flex-wrap items-center gap-1 text-sm font-medium">
+    <nav className="flex flex-nowrap items-center gap-1 whitespace-nowrap text-sm font-medium">
       {liens.map(([href, label]) => (
         <Link
           key={href}

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { libelleMode } from "./Mode";
 import { BadgePlaces, JaugePlaces } from "./Places";
 import { formatHeure, formatPeriode } from "@/lib/dendreo/dates";
 import type { Session } from "@/lib/dendreo/types";
@@ -17,7 +16,6 @@ export function ListeSessions({ sessions, inscrit, attentes }: { sessions: Sessi
               <p className="font-semibold first-letter:uppercase">{formatPeriode(s.debut, s.fin)}</p>
               <p className="text-sm text-muted">
                 {s.creneaux.length > 0 && `${s.creneaux.length} créneau${s.creneaux.length > 1 ? "x" : ""} · ${formatHeure(s.creneaux[0].debut)}–${formatHeure(s.creneaux[0].fin)}`}
-                {s.modes.length > 0 && ` · ${s.modes.map(libelleMode).join(", ")}`}
                 {s.lieux[0] && ` · ${s.lieux[0].intitule}${s.lieux[0].ville ? `, ${s.lieux[0].ville}` : ""}`}
               </p>
               <JaugePlaces places={s.places} />

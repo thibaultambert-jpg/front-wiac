@@ -108,3 +108,14 @@ body {
 .fc .fc-button-group > .fc-button:not(:last-child) { margin-right: 4px; }
 .fc .fc-event { cursor: pointer; border-radius: 6px; padding: 1px 3px; }
 .fc .fc-col-header-cell-cushion { text-transform: capitalize; font-weight: 700; color: var(--muted); }
+
+/* Calendrier sur mobile : cases compactes, événements tronqués proprement */
+@media (max-width: 639px) {
+  .fc { font-size: 0.7rem; }
+  .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 0.75rem; gap: 0.5rem; }
+  .fc .fc-toolbar-title { font-size: 1rem; }
+  .fc .fc-daygrid-day-number { padding: 2px 3px; }
+  .fc .fc-daygrid-event { margin: 1px 1px 0; padding: 0 2px; }
+  .fc .fc-event-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fc .fc-daygrid-more-link { font-size: 0.65rem; }
+}
