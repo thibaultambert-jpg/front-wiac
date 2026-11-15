@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ChiffresHero, Hero } from "@/components/Hero";
+import { BarreSessions } from "@/components/BarreSessions";
 import { BoutonAction } from "@/components/BoutonAction";
 import { ListeSessions } from "@/components/ListeSessions";
 import { libelleNiveau } from "@/components/Niveau";
@@ -73,7 +74,7 @@ export default async function PageFormation({ params }: Props) {
         />
       </Hero>
 
-      <div className={`mx-auto max-w-5xl px-4 ${prochaine ? "pb-24" : "pb-4"}`}>
+      <div className="mx-auto max-w-5xl px-4 pb-4">
         <Link href="/formations" className="mt-6 inline-block text-sm text-muted hover:text-violet">← Toutes les formations</Link>
 
         {objectifs && (
@@ -125,17 +126,7 @@ export default async function PageFormation({ params }: Props) {
         </SectionNumerotee>
       </div>
 
-      {prochaine && (
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white/95 backdrop-blur">
-          <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-bold">{formation.titre}</p>
-              <p className="text-xs text-muted first-letter:uppercase">Prochaine session {formatPeriode(prochaine.debut, prochaine.fin)}</p>
-            </div>
-            <a href="#sessions" className="btn btn-primary btn-sm shrink-0">Choisir une session</a>
-          </div>
-        </div>
-      )}
+      {prochaine && <BarreSessions titre={formation.titre} sousTitre={`Prochaine session ${formatPeriode(prochaine.debut, prochaine.fin)}`} />}
     </>
   );
 }
