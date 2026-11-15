@@ -63,56 +63,57 @@ export default async function PageSession({ params }: Props) {
       </Hero>
 
       <div className="mx-auto max-w-6xl space-y-6 px-4 pt-6">
-      <Link href={formation ? `/formations/${formation.slug}` : "/formations"} className="text-sm text-muted hover:text-violet">
-        ← {formation ? titre : "Toutes les formations"}
+      <Link href={formation ? `/formations/${formation.slug}` : "/formations"} className="inline-block text-sm font-semibold text-violet hover:underline">
+        ← {formation ? "Revoir le programme de la formation" : "Toutes les formations"}
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
-          <section>
-            <h2 className="titre-section text-xl">Planning</h2>
-            {session.creneaux.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">Les créneaux seront communiqués prochainement.</p>
-            ) : (
-              <ol className="mt-3 divide-y divide-line rounded-2xl border border-line bg-surface-2">
-                {session.creneaux.map((c) => {
-                  const lieu = session.lieux.find((l) => l.id === c.idSalle);
-                  return (
-                    <li key={c.id} className="flex flex-wrap items-baseline justify-between gap-2 px-4 py-3 text-sm">
-                      <span className="font-semibold first-letter:uppercase">{formatJourLong(c.debut)}</span>
-                      <span className="text-muted">
-                        {formatHeure(c.debut)} – {formatHeure(c.fin)}
-                        {lieu && ` · ${lieu.intitule}`}
-                      </span>
-                      {c.nom && <span className="w-full text-muted">{c.nom}</span>}
-                    </li>
-                  );
-                })}
-              </ol>
-            )}
-          </section>
-
-          {session.lieux.length > 0 && (
+          <div className="grid gap-6 md:grid-cols-2">
             <section>
-              <h2 className="titre-section text-xl">Lieu{session.lieux.length > 1 ? "x" : ""}</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {session.lieux.map((l) => (
-                  <div key={l.id} className="card p-4 text-sm">
-                    <p className="font-medium">{l.intitule}</p>
-                    {l.elearning ? (
-                      <p className="text-muted">À distance</p>
-                    ) : (
-                      <p className="text-muted">
-                        {l.adresse}
-                        {(l.codePostal || l.ville) && <><br />{l.codePostal} {l.ville}</>}
+              <h2 className="titre-section text-xl">Planning</h2>
+              {session.creneaux.length === 0 ? (
+                <p className="mt-3 rounded-2xl border border-line bg-surface-2 p-4 text-sm text-muted">Les créneaux seront communiqués prochainement.</p>
+              ) : (
+                <ol className="mt-3 divide-y divide-line rounded-2xl border border-line bg-surface-2">
+                  {session.creneaux.map((c) => (
+                    <li key={c.id} className="px-4 py-3 text-sm">
+                      <p>
+                        <span className="font-semibold first-letter:uppercase">{formatJourLong(c.debut)}</span>
+                        <span className="text-muted">
+                          {" · "}
+                          {formatHeure(c.debut)} – {formatHeure(c.fin)}
+                        </span>
                       </p>
-                    )}
-                    {l.acces && <div className="prose-fiche mt-2 text-muted" dangerouslySetInnerHTML={{ __html: nettoyerHtml(l.acces) }} />}
-                  </div>
-                ))}
-              </div>
+                      {c.nom && <p className="mt-0.5 text-muted">{c.nom}</p>}
+                    </li>
+                  ))}
+                </ol>
+              )}
             </section>
-          )}
+
+            {session.lieux.length > 0 && (
+              <section>
+                <h2 className="titre-section text-xl">Lieu{session.lieux.length > 1 ? "x" : ""}</h2>
+                <div className="mt-3 space-y-3">
+                  {session.lieux.map((l) => (
+                    <div key={l.id} className="rounded-2xl border border-line bg-surface-2 p-4 text-sm">
+                      <p className="font-semibold">{l.intitule}</p>
+                      {l.elearning ? (
+                        <p className="text-muted">À distance</p>
+                      ) : (
+                        <p className="text-muted">
+                          {l.adresse}
+                          {(l.codePostal || l.ville) && <><br />{l.codePostal} {l.ville}</>}
+                        </p>
+                      )}
+                      {l.acces && <div className="prose-fiche mt-2 !text-sm text-muted [&_p]:my-1" dangerouslySetInnerHTML={{ __html: nettoyerHtml(l.acces) }} />}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
 
           {!formation?.fiche && session.descriptionHtml && (
             <section>
@@ -120,14 +121,9 @@ export default async function PageSession({ params }: Props) {
               <div className="prose-fiche" dangerouslySetInnerHTML={{ __html: nettoyerHtml(session.descriptionHtml) }} />
             </section>
           )}
-          {formation?.fiche && (
-            <p className="text-sm">
-              <Link href={`/formations/${formation.slug}`} className="font-semibold text-violet hover:underline">Voir le programme complet de la formation →</Link>
-            </p>
-          )}
         </div>
 
-        <aside className="card h-fit space-y-4 p-5 lg:sticky lg:top-6">
+        <aside className="card h-fit space-y-4 p-5 lg:sticky lg:top-6 lg:mt-10">
           <dl className="space-y-3 text-sm">
             {session.formateurs.length > 0 && (
               <div>
