@@ -2,7 +2,8 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
-import { emailDuDomaine, emailsAdmin } from "./config";
+import { emailsAdminAutorises } from "./admins";
+import { emailDuDomaine } from "./config";
 import { supabaseAdmin, supabaseSession } from "./supabase/server";
 
 export type Utilisateur = {
@@ -34,13 +35,13 @@ export function identiteAutorisee(user: Pick<User, "email" | "user_metadata">): 
   return true;
 }
 
-/** Crée ou met à jour le profil à la connexion ; promeut admin les emails de ADMIN_EMAILS. */
+/** Crée ou met à jour le profil à la connexion ; promeut admin les emails de ADMIN_EMAILS et de la liste gérée dans le BO. */
 export async function synchroniserProfil(user: User): Promise<void> {
   const db = supabaseAdmin();
   const email = user.email!.toLowerCase();
   const { prenom, nom } = nomsDepuisGoogle((user.user_metadata ?? {}) as Record<string, unknown>);
   const { data: existant } = await db.from("profiles").select("id, role").eq("id", user.id).maybeSingle();
-  const admin = emailsAdmin().has(email);
+  const admin = (await emailsAdminAutorises()).has(email);
   if (existant) {
     await db
       .from("profiles")

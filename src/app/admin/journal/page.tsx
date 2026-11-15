@@ -16,6 +16,8 @@ const LIBELLES: Record<string, string> = {
   module_delie: "Module délié",
   module_ignore: "Module ignoré / réactivé",
   synchronisation: "Synchronisation Dendreo",
+  admin_ajoute: "Admin ajouté",
+  admin_retire: "Admin retiré",
 };
 
 const DATE = new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Paris" });
