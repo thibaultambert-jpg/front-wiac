@@ -12,6 +12,7 @@ const LIENS_ADMIN: [string, string][] = [
   ["/admin/attente", "Listes d'attente"],
   ["/admin/formations", "Fiches"],
   ["/admin/detectees", "Formations détectées"],
+  ["/admin/admins", "Admins"],
   ["/admin/journal", "Journal"],
 ];
 

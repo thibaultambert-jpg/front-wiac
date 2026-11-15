@@ -15,7 +15,9 @@ export type ActionJournal =
   | "module_ignore"
   | "synchronisation"
   | "interet_ajout"
-  | "interet_retrait";
+  | "interet_retrait"
+  | "admin_ajoute"
+  | "admin_retire";
 
 export async function journaliser(e: {
   acteur: string;

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { Etat } from "@/components/FormAction";
 import { attenteSession, changerStatut } from "@/lib/attente";
+import { AdminImpossible, ajouterAdmin, normaliserEmail, retirerAdmin } from "@/lib/admins";
 import { exigerAdmin } from "@/lib/auth";
 import { nettoyerHtml, texteBrut } from "@/lib/dendreo/html";
 import { InscriptionImpossible } from "@/lib/dendreo/inscription";
@@ -21,7 +22,7 @@ const idNum = (v: string) => (/^\d+$/.test(v) ? v : null);
 const uuid = z.string().uuid();
 
 function echec(e: unknown, defaut = "Opération impossible."): Etat {
-  if (e instanceof InscriptionImpossible) return { ok: false, message: e.message };
+  if (e instanceof InscriptionImpossible || e instanceof AdminImpossible) return { ok: false, message: e.message };
   console.error(e);
   return { ok: false, message: e instanceof Error && e.message ? `${defaut} (${e.message})` : defaut };
 }
@@ -248,4 +249,32 @@ export async function retirerDeLAttente(_: Etat, f: FormData): Promise<Etat> {
   revalidatePath(`/admin/attente/${ligne.id_action_de_formation}`);
   revalidatePath("/admin/attente");
   return { ok: true, message: "Retiré(e) de la liste." };
+}
+
+// --- Admins -----------------------------------------------------------------
+
+export async function ajouterUnAdmin(_: Etat, f: FormData): Promise<Etat> {
+  const admin = await exigerAdmin();
+  const email = normaliserEmail(texte(f, "email"));
+  try {
+    const { promu } = await ajouterAdmin(email, admin.email);
+    await journaliser({ acteur: admin.email, action: "admin_ajoute", cible: email });
+    revalidatePath("/admin/admins");
+    return { ok: true, message: promu ? `${email} est maintenant admin.` : `${email} sera admin à sa première connexion.` };
+  } catch (e) {
+    return echec(e, "Ajout impossible");
+  }
+}
+
+export async function retirerUnAdmin(_: Etat, f: FormData): Promise<Etat> {
+  const admin = await exigerAdmin();
+  const email = normaliserEmail(texte(f, "email"));
+  try {
+    await retirerAdmin(email, admin.email);
+    await journaliser({ acteur: admin.email, action: "admin_retire", cible: email });
+    revalidatePath("/admin/admins");
+    return { ok: true, message: `${email} n'est plus admin.` };
+  } catch (e) {
+    return echec(e, "Retrait impossible");
+  }
 }
