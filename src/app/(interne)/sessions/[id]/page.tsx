@@ -101,6 +101,11 @@ export default async function PageSession({ params }: Props) {
                   <br />
                   {LIEU.codePostal} {LIEU.ville}
                 </p>
+                <p className="mt-2 text-muted">
+                  {LIEU.etage}
+                  <br />
+                  Code d&apos;accès : <span className="font-semibold text-ink">{LIEU.code}</span>
+                </p>
               </div>
             </section>
           </div>

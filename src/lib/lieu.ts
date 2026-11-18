@@ -4,4 +4,6 @@ export const LIEU = {
   adresse: "20 av. Franklin D. Roosevelt",
   codePostal: "75008",
   ville: "Paris",
+  etage: "7ème étage",
+  code: "A2230B",
 } as const;
