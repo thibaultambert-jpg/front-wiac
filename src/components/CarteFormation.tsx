@@ -18,6 +18,8 @@ export function CarteFormation({
   attentes: Map<string, number>;
 }) {
   const t = themeCategorie(fo.categorie, fo.idCategorie);
+  // Sessions avec des places d'abord ; l'ordre chronologique est conservé dans chaque groupe (tri stable).
+  const sessions = [...fo.sessions].sort((a, b) => Number(a.places.complet) - Number(b.places.complet));
   return (
     <li
       className="card relative flex flex-col overflow-hidden border-l-4"
@@ -40,8 +42,8 @@ export function CarteFormation({
         <p className="mt-2 line-clamp-3 text-sm text-muted">{resume}</p>
 
         <div className="mt-4 flex-1 space-y-2">
-          {fo.sessions.length === 0 && <p className="text-xs font-semibold uppercase tracking-wide text-muted">Pas de session programmée</p>}
-          {fo.sessions.slice(0, 2).map((s) => (
+          {sessions.length === 0 && <p className="text-xs font-semibold uppercase tracking-wide text-muted">Pas de session programmée</p>}
+          {sessions.slice(0, 2).map((s) => (
             <Link
               key={s.id}
               href={`/sessions/${s.id}`}
@@ -57,9 +59,9 @@ export function CarteFormation({
               )}
             </Link>
           ))}
-          {fo.sessions.length > 2 && (
+          {sessions.length > 2 && (
             <p className="text-xs text-muted">
-              + {fo.sessions.length - 2} autre{fo.sessions.length - 2 > 1 ? "s" : ""} session{fo.sessions.length - 2 > 1 ? "s" : ""}
+              + {sessions.length - 2} autre{sessions.length - 2 > 1 ? "s" : ""} session{sessions.length - 2 > 1 ? "s" : ""}
             </p>
           )}
         </div>
