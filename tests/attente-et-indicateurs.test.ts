@@ -22,6 +22,15 @@ describe("tableau de bord", () => {
     expect(indicateurs(lignes)).toMatchObject({ sessions: 2, completes: 1, enAttente: 3, placesRestantes: 2, sousMinimum: 0 });
     expect(indicateurs(lignes).remplissageMoyen).toBeCloseTo(14 / 16);
   });
+  it("compte les sessions sous le minimum de 6 inscrits (0, 2 inscrits, hors 6)", () => {
+    const peu = assemblerSessions({
+      ...brut,
+      adfs: [0, 2, 6].map((n, i) => ({ ...brut.adfs[0], id_action_de_formation: `9${i}`, total_participants: String(n), nb_participants_min: "0" })),
+    });
+    const l = lignesSessions(peu, new Map());
+    expect(l.map((x) => x.sousMinimum)).toEqual([true, true, false]);
+    expect(indicateurs(l).sousMinimum).toBe(2);
+  });
   it("compte par mois", () => {
     expect(parMois(["2026-11-02T10:00:00Z", "2026-11-20T10:00:00Z", "2026-09-01T00:00:00Z", "2025-01-01"], 3, new Date("2026-11-06T00:00:00Z"))).toEqual([
       { mois: "2026-09", total: 1 },

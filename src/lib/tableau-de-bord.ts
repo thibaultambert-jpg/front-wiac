@@ -1,4 +1,5 @@
 // Indicateurs du tableau de bord (fonctions pures, testées).
+import { MIN_PARTICIPANTS } from "./dendreo/places";
 import type { Session } from "./dendreo/types";
 
 export type LigneSession = {
@@ -22,10 +23,11 @@ export function lignesSessions(sessions: Session[], attente: Map<string, number>
     fin: s.fin,
     inscrits: s.places.inscrits,
     max: s.places.max,
-    min: s.places.min,
+    // Minimum lu ici (et non dans `s.places.min`, qui peut venir d'un cache calculé avec l'ancienne valeur).
+    min: MIN_PARTICIPANTS,
     remplissage: s.places.max > 0 ? s.places.inscrits / s.places.max : null,
     attente: attente.get(s.id) ?? 0,
-    sousMinimum: s.places.min > 0 && s.places.inscrits < s.places.min,
+    sousMinimum: s.places.inscrits < MIN_PARTICIPANTS,
   }));
 }
 
