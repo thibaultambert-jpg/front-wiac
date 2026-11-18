@@ -26,7 +26,7 @@ export function CarteFormation({
       style={{ borderLeftColor: t.couleur, backgroundImage: `linear-gradient(135deg, ${t.fond} 0%, #ffffff 55%)` }}
     >
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex min-h-7 items-center justify-between gap-2">
           {fo.fiche?.niveau ? <Niveau niveau={fo.fiche.niveau} /> : <span />}
           {t.libelle && (
             <span className="chip" style={{ background: t.puce, color: t.couleur }}>
@@ -34,12 +34,13 @@ export function CarteFormation({
             </span>
           )}
         </div>
-        <h3 className="mt-3 text-lg font-bold leading-snug">
+        {/* Hauteurs minimales : titres sur 2 lignes et résumés sur 3 lignes, pour aligner les cartes d'une même rangée. */}
+        <h3 className="mt-3 line-clamp-2 min-h-[3.1rem] text-lg font-bold leading-snug">
           <Link href={`/formations/${fo.slug}`} className="hover:text-violet">
             {fo.titre}
           </Link>
         </h3>
-        <p className="mt-2 line-clamp-3 text-sm text-muted">{resume}</p>
+        <p className="mt-2 line-clamp-3 min-h-[3.75rem] text-sm text-muted">{resume}</p>
 
         <div className="mt-4 flex-1 space-y-2">
           {sessions.length === 0 && <p className="text-xs font-semibold uppercase tracking-wide text-muted">Pas de session programmée</p>}
