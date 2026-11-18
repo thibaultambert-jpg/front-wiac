@@ -7,6 +7,11 @@ describe("calculerPlaces", () => {
       min: 6, max: 8, inscrits: 6, restantes: 2, complet: false,
     });
   });
+  it("fixe le minimum à 6, quel que soit celui de Dendreo", () => {
+    expect(calculerPlaces({ nb_participants_min: "3" }).min).toBe(6);
+    expect(calculerPlaces({ nb_participants_min: "0" }).min).toBe(6);
+    expect(calculerPlaces({}).min).toBe(6);
+  });
   it("est complet quand les inscrits atteignent ou dépassent le maximum", () => {
     expect(calculerPlaces({ nb_participants_max: "8", total_participants: "8" }).complet).toBe(true);
     const sur = calculerPlaces({ nb_participants_max: "8", total_participants: "11" });
