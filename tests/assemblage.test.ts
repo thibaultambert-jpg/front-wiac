@@ -12,7 +12,6 @@ describe("assemblerSessions", () => {
   it("assemble créneaux triés, lieu, formateurs, catégorie et places", () => {
     const pb = sessions.find((s) => s.id === "353")!;
     expect(pb.creneaux.map((c) => c.id)).toEqual(["2350", "2351"]);
-    expect(pb.lieux.map((l) => l.ville)).toEqual(["Paris"]);
     expect(pb.formateurs).toEqual(["Brian Ridolce"]);
     expect(pb.categorie).toBe("AI");
     expect(pb.modules).toEqual([{ id: "57", intitule: "WIVOO - Product Builder", mode: "presentiel" }]);

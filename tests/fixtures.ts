@@ -14,7 +14,6 @@ export const brut = {
     { id_creneau: "2350", id_action_de_formation: "353", date_debut: "2026-12-01 17:30", date_fin: "2026-12-01 20:30", name: "Stratégie", id_salle_de_formation: "7" },
     { id_creneau: "2346", id_action_de_formation: "352", date_debut: "2026-12-01 17:30", date_fin: "2026-12-01 20:30" },
   ],
-  salles: [{ id_salle_de_formation: "7", intitule: "Wiacademy", adresse: "20 av. Franklin D. Roosevelt", code_postal: "75008", ville: "Paris", elearning: "0" }],
   categories: [
     { id_categorie_module: "5", intitule: "Data" },
     { id_categorie_module: "7", intitule: "AI" },

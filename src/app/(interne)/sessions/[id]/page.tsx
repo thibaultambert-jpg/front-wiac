@@ -11,6 +11,7 @@ import { formationDeSession } from "@/lib/catalogue";
 import { aujourdhui, formatHeure, formatJourLong, formatPeriode } from "@/lib/dendreo/dates";
 import { nettoyerHtml } from "@/lib/dendreo/html";
 import { sessionParId } from "@/lib/dendreo/sessions";
+import { LIEU } from "@/lib/lieu";
 import { idsSessionsInscrit } from "@/lib/mes-formations";
 import { quitterAttente, rejoindreAttente, sInscrire, seDesinscrire } from "../../actions";
 
@@ -33,7 +34,6 @@ export default async function PageSession({ params }: Props) {
   const titre = formation?.titre ?? session.intitule;
 
   const t = themeCategorie(formation?.categorie || session.categorie, session.idCategorie);
-  const lieu = session.lieux[0];
 
   return (
     <>
@@ -55,7 +55,7 @@ export default async function PageSession({ params }: Props) {
         <ChiffresHero
           items={[
             ["Créneaux", session.creneaux.length || ""],
-            ["Lieu", lieu ? (lieu.elearning ? "À distance" : lieu.ville || lieu.intitule) : ""],
+            ["Lieu", LIEU.ville],
             ["Places", session.places.max > 0 ? `${session.places.inscrits}/${session.places.max}` : ""],
             ["Statut", estInscrit ? "Inscrit" : rang ? `Attente n°${rang}` : session.places.complet ? "Complet" : "Ouvert"],
           ]}
@@ -92,27 +92,17 @@ export default async function PageSession({ params }: Props) {
               )}
             </section>
 
-            {session.lieux.length > 0 && (
-              <section>
-                <h2 className="titre-section text-xl">Lieu{session.lieux.length > 1 ? "x" : ""}</h2>
-                <div className="mt-3 space-y-3">
-                  {session.lieux.map((l) => (
-                    <div key={l.id} className="rounded-2xl border border-line bg-surface-2 p-4 text-sm">
-                      <p className="font-semibold">{l.intitule}</p>
-                      {l.elearning ? (
-                        <p className="text-muted">À distance</p>
-                      ) : (
-                        <p className="text-muted">
-                          {l.adresse}
-                          {(l.codePostal || l.ville) && <><br />{l.codePostal} {l.ville}</>}
-                        </p>
-                      )}
-                      {l.acces && <div className="prose-fiche mt-2 !text-sm text-muted [&_p]:my-1" dangerouslySetInnerHTML={{ __html: nettoyerHtml(l.acces) }} />}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+            <section>
+              <h2 className="titre-section text-xl">Lieu</h2>
+              <div className="mt-3 rounded-2xl border border-line bg-surface-2 p-4 text-sm">
+                <p className="font-semibold">{LIEU.intitule}</p>
+                <p className="text-muted">
+                  {LIEU.adresse}
+                  <br />
+                  {LIEU.codePostal} {LIEU.ville}
+                </p>
+              </div>
+            </section>
           </div>
 
           {!formation?.fiche && session.descriptionHtml && (

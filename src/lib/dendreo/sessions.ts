@@ -13,15 +13,9 @@ const DUREE_CACHE = 300; // secondes
 let instance: DendreoClient | undefined;
 export const dendreo = () => (instance ??= DendreoClient.fromEnv());
 
-/** Référentiels peu volatils : salles et catégories. */
+/** Référentiel peu volatil : catégories. */
 const referentiels = unstable_cache(
-  async () => {
-    const [salles, categories] = await Promise.all([
-      dendreo().list("salles_de_formation.php"),
-      dendreo().list("categories_module.php"),
-    ]);
-    return { salles, categories };
-  },
+  async () => ({ categories: await dendreo().list("categories_module.php") }),
   ["dendreo-referentiels"],
   { revalidate: 3600, tags: [TAG_SESSIONS] },
 );

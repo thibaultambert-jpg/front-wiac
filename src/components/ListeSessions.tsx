@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BadgePlaces, JaugePlaces } from "./Places";
 import { formatHeure, formatPeriode } from "@/lib/dendreo/dates";
 import type { Session } from "@/lib/dendreo/types";
+import { LIEU } from "@/lib/lieu";
 
 export function ListeSessions({ sessions, inscrit, attentes }: { sessions: Session[]; inscrit: Set<string>; attentes: Map<string, number> }) {
   if (sessions.length === 0) {
@@ -16,7 +17,7 @@ export function ListeSessions({ sessions, inscrit, attentes }: { sessions: Sessi
               <p className="font-semibold first-letter:uppercase">{formatPeriode(s.debut, s.fin)}</p>
               <p className="text-sm text-muted">
                 {s.creneaux.length > 0 && `${s.creneaux.length} créneau${s.creneaux.length > 1 ? "x" : ""} · ${formatHeure(s.creneaux[0].debut)}–${formatHeure(s.creneaux[0].fin)}`}
-                {s.lieux[0] && ` · ${s.lieux[0].intitule}${s.lieux[0].ville ? `, ${s.lieux[0].ville}` : ""}`}
+                {` · ${LIEU.intitule}, ${LIEU.ville}`}
               </p>
               <JaugePlaces places={s.places} />
             </div>

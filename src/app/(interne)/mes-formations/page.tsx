@@ -7,6 +7,7 @@ import { exigerUtilisateur } from "@/lib/auth";
 import { aujourdhui, formatPeriode } from "@/lib/dendreo/dates";
 import { sessionsParIds } from "@/lib/dendreo/sessions";
 import type { Session } from "@/lib/dendreo/types";
+import { LIEU } from "@/lib/lieu";
 import { mesInscriptions } from "@/lib/mes-formations";
 import { quitterAttente, seDesinscrire } from "../actions";
 
@@ -19,7 +20,7 @@ function Ligne({ s, children }: { s: Session; children?: React.ReactNode }) {
         <Link href={`/sessions/${s.id}`} className="font-semibold hover:text-violet">{s.intitule}</Link>
         <p className="text-sm text-muted">
           {formatPeriode(s.debut, s.fin)}
-          {s.lieux[0] && ` · ${s.lieux[0].intitule}`}
+          {` · ${LIEU.intitule}`}
         </p>
       </div>
       {children}
