@@ -28,6 +28,7 @@ export type Session = {
   modules: ModuleSession[];
   modes: string[];
   formateurs: string[];
+  idsFormateurs: string[]; // ids Dendreo, pour reconnaître le formateur connecté
   creneaux: Creneau[];
   places: Places;
 };

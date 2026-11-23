@@ -35,10 +35,13 @@ export function assemblerSessions(d: DonneesBrutes, etapesMasquees: Set<string> 
         .sort((x, y) => x.debut.localeCompare(y.debut));
 
       const formateurs = new Set<string>();
+      const idsFormateurs = new Set<string>();
       for (const l of lams) {
         for (const f of objets(l.formateurs)) {
           const nom = `${s(f.prenom)} ${s(f.nom)}`.trim() || s(f.nom_complet);
           if (nom) formateurs.add(nom);
+          const idF = id(f.id_formateur);
+          if (idF) idsFormateurs.add(idF);
         }
       }
 
@@ -58,6 +61,7 @@ export function assemblerSessions(d: DonneesBrutes, etapesMasquees: Set<string> 
         modules: lams.map((l) => ({ id: s(l.id_module), intitule: s(l.intitule_module) || s(l.intitule), mode: s(l.mode_organisation) })),
         modes,
         formateurs: [...formateurs],
+        idsFormateurs: [...idsFormateurs],
         creneaux,
         places: calculerPlaces(a),
       };

@@ -47,7 +47,8 @@ function IconePortail() {
  * Bandeau violet avec barre de navigation en pilule lavande, comme le site public.
  * Mobile : logo + pictos (back-office, déconnexion) en haut, menu sur une ligne en dessous.
  */
-export function Entete({ u, zone }: { u: Utilisateur; zone: "interne" | "admin" }) {
+export function Entete({ u, zone, formateur = false }: { u: Utilisateur; zone: "interne" | "admin"; formateur?: boolean }) {
+  const liensInterne: [string, string][] = formateur ? [...LIENS_INTERNE, ["/mes-interventions", "Mes interventions"]] : LIENS_INTERNE;
   const versAutreZone = zone === "admin" ? { href: "/formations", label: "Voir le portail" } : { href: "/admin", label: "Back-office" };
   return (
     <div className="bg-violet px-4 pt-3">
@@ -86,7 +87,7 @@ export function Entete({ u, zone }: { u: Utilisateur; zone: "interne" | "admin" 
         </div>
 
         <div className="order-3 -mx-1 w-full overflow-x-auto sm:order-2 sm:mx-0 sm:w-auto">
-          <NavLiens liens={zone === "admin" ? LIENS_ADMIN : LIENS_INTERNE} />
+          <NavLiens liens={zone === "admin" ? LIENS_ADMIN : liensInterne} />
         </div>
       </header>
     </div>
