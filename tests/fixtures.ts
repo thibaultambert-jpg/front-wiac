@@ -6,7 +6,7 @@ export const brut = {
     { id_action_de_formation: "363", type: "intra", intitule: "INTRA - Product Builder", date_debut: "2026-12-03", date_fin: "2026-12-04", nb_participants_max: "10", total_participants: "3" },
   ],
   lams: [
-    { id_lam: "423", id_action_de_formation: "353", id_module: "57", intitule_module: "WIVOO - Product Builder", mode_organisation: "presentiel", id_salle_de_formation: "7", formateurs: [{ prenom: "Brian", nom: "Ridolce" }] },
+    { id_lam: "423", id_action_de_formation: "353", id_module: "57", intitule_module: "WIVOO - Product Builder", mode_organisation: "presentiel", id_salle_de_formation: "7", formateurs: [{ id_formateur: "28", prenom: "Brian", nom: "Ridolce", email_pro: "brian.ridolce@wivoo.fr" }] },
     { id_lam: "422", id_action_de_formation: "352", id_module: "48", intitule_module: "WIVOO - Data for PM 2", mode_organisation: "presentiel", formateurs: [[]] },
   ],
   creneaux: [

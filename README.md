@@ -14,6 +14,7 @@ Portail où les collaborateurs consultent les formations **INTER** programmées 
 - `/formations/[slug]` : fiche éditée dans le BO (ou description Dendreo par défaut) + sessions à venir.
 - `/sessions/[id]` : planning des créneaux, lieu, formateurs, jauge de places ; **S'inscrire** (inscription directe dans Dendreo, places relues en direct) ou **liste d'attente** si complet.
 - `/mes-formations` : inscriptions à venir et passées, positions en liste d'attente, annulation.
+- `/mes-interventions` (formateurs uniquement) : sessions INTER en cours ou à venir animées par l'utilisateur, avec planning, places et lien vers la liste des inscrits. Sur `/sessions/[id]`, le formateur de la session voit les participants inscrits (nom, fonction, email) à la place du bouton d'inscription.
 
 **Back-office (`/admin`, rôle admin)**
 - Tableau de bord : remplissage, places restantes, sessions sous le minimum, demande non satisfaite (listes d'attente par formation), inscriptions par mois, export CSV.
@@ -28,6 +29,7 @@ Portail où les collaborateurs consultent les formations **INTER** programmées 
 - Le participant Dendreo est retrouvé par email (créé si absent, rattaché à `DENDREO_ID_ENTREPRISE`).
 - Une session dont tous les modules sont « ignorés » est masquée du portail ; un module sans fiche publiée reste visible avec sa description Dendreo.
 - Désinscription possible jusqu'à la veille du début (Dendreo refuse si des présences sont saisies).
+- Un utilisateur est reconnu formateur quand son email Google correspond à l'**email pro** d'une fiche formateur Dendreo ; il voit les sessions où cette fiche est affectée à un module.
 
 ## Mise en route
 

@@ -33,7 +33,7 @@ async function chargerAVenir(): Promise<Session[]> {
 }
 
 /** Sessions INTER à venir (cache 5 min, invalidé après chaque inscription). */
-export const sessionsAVenir = unstable_cache(chargerAVenir, ["dendreo-sessions-a-venir-v2"], {
+export const sessionsAVenir = unstable_cache(chargerAVenir, ["dendreo-sessions-a-venir-v3"], {
   revalidate: DUREE_CACHE,
   tags: [TAG_SESSIONS],
 });
@@ -54,7 +54,7 @@ async function chargerSessions(ids: string[]): Promise<Session[]> {
 /** Une ou plusieurs sessions précises (y compris passées ou en cours), en cache. */
 export const sessionsParIds = unstable_cache(
   async (ids: string[]) => chargerSessions([...new Set(ids)].sort()),
-  ["dendreo-sessions-par-ids-v2"],
+  ["dendreo-sessions-par-ids-v3"],
   { revalidate: DUREE_CACHE, tags: [TAG_SESSIONS] },
 );
 

@@ -13,6 +13,7 @@ describe("assemblerSessions", () => {
     const pb = sessions.find((s) => s.id === "353")!;
     expect(pb.creneaux.map((c) => c.id)).toEqual(["2350", "2351"]);
     expect(pb.formateurs).toEqual(["Brian Ridolce"]);
+    expect(pb.idsFormateurs).toEqual(["28"]);
     expect(pb.categorie).toBe("AI");
     expect(pb.modules).toEqual([{ id: "57", intitule: "WIVOO - Product Builder", mode: "presentiel" }]);
     expect(pb.places).toMatchObject({ complet: true, inscrits: 11, max: 8 });
@@ -20,6 +21,7 @@ describe("assemblerSessions", () => {
 
   it("ignore les listes vides au format Dendreo ([[]])", () => {
     expect(sessions.find((s) => s.id === "352")!.formateurs).toEqual([]);
+    expect(sessions.find((s) => s.id === "352")!.idsFormateurs).toEqual([]);
   });
 
   it("masque les étapes demandées", () => {

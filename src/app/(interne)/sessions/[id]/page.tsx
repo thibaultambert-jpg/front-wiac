@@ -13,6 +13,7 @@ import { nettoyerHtml } from "@/lib/dendreo/html";
 import { sessionParId } from "@/lib/dendreo/sessions";
 import { LIEU } from "@/lib/lieu";
 import { idsSessionsInscrit } from "@/lib/mes-formations";
+import { animeLaSession, participantsSession } from "@/lib/formateur";
 import { quitterAttente, rejoindreAttente, sInscrire, seDesinscrire } from "../../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -27,7 +28,14 @@ export default async function PageSession({ params }: Props) {
   const u = await exigerUtilisateur();
   const session = await sessionParId(id);
   if (!session) notFound();
-  const [formation, inscrit, attentes] = await Promise.all([formationDeSession(id), idsSessionsInscrit(u), attentesUtilisateur(u.id)]);
+  const [formation, inscrit, attentes, anime] = await Promise.all([
+    formationDeSession(id),
+    idsSessionsInscrit(u),
+    attentesUtilisateur(u.id),
+    animeLaSession(u, session),
+  ]);
+  // Liste des inscrits : réservée au formateur de la session.
+  const participants = anime ? await participantsSession(id).catch(() => null) : null;
   const estInscrit = inscrit.has(id);
   const rang = attentes.get(id);
   const commencee = session.debut.slice(0, 10) <= aujourdhui();
@@ -57,7 +65,7 @@ export default async function PageSession({ params }: Props) {
             ["Créneaux", session.creneaux.length || ""],
             ["Lieu", LIEU.ville],
             ["Places", session.places.max > 0 ? `${session.places.inscrits}/${session.places.max}` : ""],
-            ["Statut", estInscrit ? "Inscrit" : rang ? `Attente n°${rang}` : session.places.complet ? "Complet" : "Ouvert"],
+            ["Statut", anime ? "Formateur" : estInscrit ? "Inscrit" : rang ? `Attente n°${rang}` : session.places.complet ? "Complet" : "Ouvert"],
           ]}
         />
       </Hero>
@@ -110,6 +118,35 @@ export default async function PageSession({ params }: Props) {
             </section>
           </div>
 
+          {anime && (
+            <section>
+              <h2 className="titre-section text-xl">
+                Participants inscrits{participants ? ` (${participants.length})` : ""}
+              </h2>
+              {participants === null ? (
+                <p className="mt-3 rounded-2xl border border-line bg-surface-2 p-4 text-sm text-muted">La liste des inscrits est momentanément indisponible. Réessayez dans quelques instants.</p>
+              ) : participants.length === 0 ? (
+                <p className="mt-3 rounded-2xl border border-line bg-surface-2 p-4 text-sm text-muted">Aucun inscrit pour le moment.</p>
+              ) : (
+                <ul className="mt-3 divide-y divide-line rounded-2xl border border-line bg-surface-2 text-sm">
+                  {participants.map((p) => (
+                    <li key={p.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 px-4 py-2.5">
+                      <span>
+                        <span className="font-semibold">{p.nom}</span>
+                        {p.fonction && <span className="text-muted"> · {p.fonction}</span>}
+                      </span>
+                      {p.email && (
+                        <a href={`mailto:${p.email}`} className="text-muted hover:text-violet">
+                          {p.email}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+
           {!formation?.fiche && session.descriptionHtml && (
             <section>
               <h2 className="titre-section text-xl">Présentation</h2>
@@ -133,7 +170,12 @@ export default async function PageSession({ params }: Props) {
           </dl>
 
           <div className="border-t border-line pt-4">
-            {estInscrit ? (
+            {anime ? (
+              <p className="rounded-lg bg-accent-soft px-3 py-2 text-sm font-medium text-accent">
+                Vous animez cette session. Retrouvez toutes vos sessions dans{" "}
+                <Link href="/mes-interventions" className="underline">Mes interventions</Link>.
+              </p>
+            ) : estInscrit ? (
               <div className="space-y-3">
                 <p className="rounded-lg bg-ok-soft px-3 py-2 text-sm font-medium text-ok">Vous êtes inscrit à cette session.</p>
                 {!commencee && (
