@@ -19,13 +19,13 @@ describe("rangs de la liste d'attente", () => {
 describe("tableau de bord", () => {
   const lignes = lignesSessions(assemblerSessions(brut), new Map([["353", 3]]));
   it("calcule les indicateurs", () => {
-    expect(indicateurs(lignes)).toMatchObject({ sessions: 2, completes: 1, enAttente: 3, placesRestantes: 2, sousMinimum: 0 });
+    expect(indicateurs(lignes)).toMatchObject({ sessions: 2, completes: 1, enAttente: 3, placesRestantes: 2, sousMinimum: 1 });
     expect(indicateurs(lignes).remplissageMoyen).toBeCloseTo(14 / 16);
   });
-  it("compte les sessions sous le minimum de 6 inscrits (0, 2 inscrits, hors 6)", () => {
+  it("compte les sessions sous le minimum de 8 inscrits (0, 6 inscrits, hors 8)", () => {
     const peu = assemblerSessions({
       ...brut,
-      adfs: [0, 2, 6].map((n, i) => ({ ...brut.adfs[0], id_action_de_formation: `9${i}`, total_participants: String(n), nb_participants_min: "0" })),
+      adfs: [0, 6, 8].map((n, i) => ({ ...brut.adfs[0], id_action_de_formation: `9${i}`, total_participants: String(n), nb_participants_min: "0" })),
     });
     const l = lignesSessions(peu, new Map());
     expect(l.map((x) => x.sousMinimum)).toEqual([true, true, false]);

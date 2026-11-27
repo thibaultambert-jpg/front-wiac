@@ -6,7 +6,7 @@ const entier = (v: unknown) => {
 };
 
 /** Minimum de participants, identique pour toutes les sessions (le `nb_participants_min` de Dendreo est ignoré). */
-export const MIN_PARTICIPANTS = 6;
+export const MIN_PARTICIPANTS = 8;
 
 /**
  * Places d'une action de formation Dendreo. `nb_participants_max` à 0 (ou vide) = pas de limite.
